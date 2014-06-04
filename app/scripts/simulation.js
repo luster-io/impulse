@@ -1,26 +1,7 @@
 var Vector = require('./vector')
   , bodies = []
-  , Emitter = require('tiny-emitter')
-  , inherits = require('inherits')
+  , Body = require('./body')
 
-function Body(pos, vel, acc) {
-  this.position = Vector(pos)
-  this.velocity = Vector(vel)
-  this.acceleration = Vector(acc)
-}
-
-inherits(Body, Emitter)
-
-function accelerate(state, time) {
-  var k = 100
-  var b = 30
-  //var spring = state.position.sub(700, windowHeight / 2).mult(-k).sub(state.velocity.mult(b))
-
-  if(state.acceleration)
-    return state.acceleration
-
-  return Vector(0, 0)//(spring.x, spring.y)
-}
 
 function increment(a, b, c, d) {
   var vec = Vector(0, 0)
@@ -40,42 +21,17 @@ function evaluate(initial, t, dt, d) {
 
   return {
     dx: state.velocity,
-    dv: initial.acceleration
+    dv: initial.accelerate(state, t)
   }
 }
-
-
 
 var der = { dx: Vector(0, 0), dv: Vector(0, 0) }
 
 function integrate(state, t, dt) {
-    //state.velocity.selfMult(.98)
     var a = evaluate( state, t, 0, der )
     var b = evaluate( state, t, dt*0.5, a )
     var c = evaluate( state, t, dt*0.5, b )
     var d = evaluate( state, t, dt, c )
-
-
-    // if(state.position.y > windowHeight) {
-    //   state.velocity.y = -Math.abs(state.velocity.y * .9)
-    //   state.position.y = windowHeight
-    // }
-
-    // if(state.position.y < 0) {
-    //   state.velocity.y = Math.abs(state.velocity.y * .9)
-    //   state.position.y = 0
-    // }
-
-    // if(state.position.x < 0) {
-    //    state.velocity.x = Math.abs(state.velocity.x * .9)
-    //    state.position.x = 0
-    // }
-
-    // if(state.position.x > windowWidth) {
-    //   state.velocity.x = -Math.abs(state.velocity.x * .9)
-    //   state.position.x = windowWidth
-    // }
-
 
     var dxdt = increment(a.dx,b.dx,c.dx,d.dx)
       , dvdt = increment(a.dv,b.dv,c.dv,d.dv)
@@ -88,10 +44,11 @@ function integrate(state, t, dt) {
 var t
   , accumulator = 0
 
-var dt = 4
+var dt = 1 / 1000
 
 function simulate() {
   requestAnimationFrame(function(newTime) {
+    newTime = newTime / 1000
     simulate()
 
     if(!t)
@@ -101,22 +58,27 @@ function simulate() {
 
     accumulator += frameTime
 
-    while(accumulator >= dt) {
+    while(accumulator > 0) {
+      var delta = Math.min(accumulator, dt)
       bodies.forEach(function(body) {
-        integrate(body, t, dt)
+        integrate(body, t, delta)
         body.emit('position', body.position)
       })
-      accumulator -= dt
-      t += dt
+      accumulator -= delta
+      t += delta
     }
-
   })
 }
 
 simulate()
 
 module.exports.addBody = function(body) {
-  var body = new Body(body.position, body.velocity, body.acceleration)
   bodies.push(body)
   return body
+}
+
+module.exports.removeBody = function(body) {
+  var index = bodies.indexOf(body)
+  if(index >= 0)
+    bodies.splice(index, 1)
 }

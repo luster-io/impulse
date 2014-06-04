@@ -30,3 +30,9 @@ accelerateTo
 decelerateTo
 springTo
 bounceTo
+
+
+#TODO
+
+  * fix bounce.
+  * make (.*)To methods take in velocity vector

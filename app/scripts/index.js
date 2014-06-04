@@ -11,6 +11,7 @@ var body = {
 var mousedown = false
   , veloX
   , veloY
+
 document.body.addEventListener('mousedown', function(evt) {
   mousedown = true
   veloX = new Velocity()

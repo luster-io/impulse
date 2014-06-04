@@ -15,6 +15,20 @@ function Vector(x, y) {
   this.y = y
 }
 
+Vector.prototype.equals = function(vec) {
+  return vec.x === this.x && vec.y === this.y
+}
+
+Vector.prototype.directionEqual = function(vec) {
+  return vec.x > 0 === this.x > 0 && this.y > 0 === vec.y > 0
+}
+
+Vector.prototype.negate = function() {
+  this.x *= -1
+  this.y *= -1
+  return this
+}
+
 Vector.prototype.norm = function() {
   return Math.sqrt(this.normsq())
 }

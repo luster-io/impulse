@@ -21,25 +21,14 @@
     "debowerify": "~0.5.2",
     "mocha": "~1.17.1",
     "should": "~3.1.2",
-    "jshint-stylish": "~0.1.5",
-    "browserify-shim": "~3.2.2"
+    "jshint-stylish": "~0.1.5"
   },
   "engines": {
     "node": ">=0.10.0"
   },
-  "browserify": {
-    "transform": [
-      "browserify-shim"
-    ]
-  },
-  "browser": {
-    "lodash": "./app/bower_components/lodash/dist/lodash.js"
-  },
-  "browserify-shim": {
-    "lodash": "global:lodash"
-  },
   "dependencies": {
     "tiny-emitter": "~0.1.12",
-    "inherits": "~2.0.1"
+    "inherits": "~2.0.1",
+    "ayepromise": "~1.1.1"
   }
 }
