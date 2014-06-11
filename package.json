@@ -1,6 +1,7 @@
 {
   "name": "rk4",
   "version": "0.0.0",
+  "main": "lib/api.js",
   "devDependencies": {
     "gulp": "3.5.2",
     "gulp-load-plugins": "~0.3.0",

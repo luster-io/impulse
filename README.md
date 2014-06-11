@@ -31,6 +31,12 @@ decelerateTo
 springTo
 bounceTo
 
+#examples
+  * Simulated Scroll
+  * Scroll with snap
+  * rotational scroll
+  * rotational scroll with snap
+  * slide menu with bounce
 
 #TODO
 
