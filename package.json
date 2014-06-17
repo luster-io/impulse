@@ -30,6 +30,7 @@
   "dependencies": {
     "tiny-emitter": "~0.1.12",
     "inherits": "~2.0.1",
-    "ayepromise": "~1.1.1"
+    "ayepromise": "~1.1.1",
+    "raf-queue": "~0.2.0"
   }
 }
