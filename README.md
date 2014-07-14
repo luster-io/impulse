@@ -1,78 +1,41 @@
-#Physics
-```
-var phys = physics(element)
-phys.css(function(pos) {
-  return {
-    transform: "translate3d(" + pos.x +  "px, " + pos.y + "px, 0)"
-  }
-})
-```
+var phys = new Physics(renderer)
 
-```
-var accel = phys.accelerate(velocity, from, to, { acceleration: 1000 })
-accel.then(phys.bounceTo(position, { damping: .8 }))
-```
+phys.on('position', function() {})
+phys.on('stop', function() {})
 
-Methods
-=======
+//normal spring
+phys.spring({ tension: 50, springyness: 10 })
+  .from(x, y).to(x, y)
+  .start()
 
-##css
+//normal spring
+  var spring = phys.spring({ tension: 50, springyness: 10 })
 
-  The css method takes in a function, that should return an object of css style-value pairs.
+  //sets a new attachment point for the spring, resumes the simulation 
+  //if it has stopped
+phys.to(x, y)
 
-##position
+phys.interact()
 
-  A function that gets called with the position, in case you want to apply the css yourself.
+//updating the position without resuming will cause the,
+//
+phys.position()
+phys.resume()
 
-###accelerate
+phys.stop() //stops all simulation, rejects all outstanding promises
+phys.start() //starts all simulations
 
-accelerate's options are:
-  * acceleration - pixels per second at which the body accelerates
+//get or set the simulations position, alias of from
 
-decelerate
-  * deceleration - pixels per second at which the body decelerates
+// get or set the simulations destination, destination is 
+// the springs attachement point, or it's where the object is moving towards
 
-spring
-  * damping - damping on the spring
-  * tension - the springs tension
+//simulate deceleration
+var decel = phys.decelerate(x, y, opts)
 
-bounce
-  * damping - amount by which to dampen velocity before each bounce
+//linear damping
+phys.linear(x, y, opts)
+  .to(x, y)
 
-## (.*)To methods
-
-The (.*)To methods are the same as the methods without To, accept,
-they don't take an initial velocity or position, instead they return
-a function that takes a State object and starts the animation.
-
-accelerateTo
-decelerateTo
-springTo
-bounceTo
-
-State
-=====
-
-##properties
-
-###position
-Vector { x: xPosition, y: yPosition }
-
-###velocity
-{ x: xVelocity, y: yVelocity }
-
-#examples
-  * Simulated Scroll
-  * Scroll with snap
-  * iOS pull down menu
-  * facebook's paper thing viewer
-  * swipe left-right menu
-  * rotational scroll
-  * flip book pages
-  * rotational scroll with snap
-  * slide menu with bounce
-
-#TODO
-
-  * fix bounce.
-  * make (.*)To methods take in velocity vector
+phys.accelerate(x, y, { accelerationX, acceleration, accelerationY })
+  .to(height)
