@@ -1,7 +1,7 @@
 {
   "name": "rk4",
   "version": "0.0.0",
-  "main": "lib/api.js",
+  "main": "lib/index.js",
   "devDependencies": {
     "gulp": "3.5.2",
     "gulp-load-plugins": "~0.3.0",
@@ -21,7 +21,7 @@
     "browserify": "~3.29.0",
     "debowerify": "~0.5.2",
     "mocha": "~1.17.1",
-    "should": "~3.1.2",
+    "should": "~4.0.4",
     "jshint-stylish": "~0.1.5"
   },
   "engines": {

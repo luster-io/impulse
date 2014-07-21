@@ -1,59 +1,40 @@
-var physics = require('../../lib/api')
-  , phys = physics(document.getElementById('thing'))
-  , Vector = require('../../lib/vector')
-  , Velocity = require('touch-velocity')
-  , mousedown = false
-  , veloX
-  , veloY
+var Physics = require('../../lib')
+Hammer = require('hammerjs')
+var mc = new Hammer.Manager($('.example1 .object')[0]);
+mc.add( new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 0 }) );
 
-function applyCss(els, rules) {
-  var length = els.length
+var phys = new Physics($('.example1 .object'))
+var opts = {}
 
-  for(rule in rules) {
-    if(rules.hasOwnProperty(rule)) {
-      for(var i = 0 ; i < length ; i++) {
-        els[i].style[rule] = rules[rule]
-      }
-    }
+phys.style('translateX', function(pos) { return pos.x + 'px' })
+    .style('translatey', function(pos) { return pos.y + 'px'})
+
+//set the initial position
+phys.position(50, 50)
+
+$('.example1 .animate').on('click', function() {
+  opts = {
+    tension: parseFloat($('.example1 .tension').val()),
+    damping: parseFloat($('.example1 .damping').val()),
   }
-}
-
-function cssFunc(currentPosition) {
-  return {
-    webkitTransform: "translate3d(" + currentPosition.x +  "px, " + currentPosition.y + "px, 0)"
-  }
-}
-
-phys.css(cssFunc)
-
-var body = {
-  position: Vector(50, 50),
-  velocity: Vector(3, 50)
-}
-
-document.body.addEventListener('mousedown', function(evt) {
-  mousedown = true
-  veloX = new Velocity()
-  veloY = new Velocity()
+  phys.position(50, 50)
+    .spring(100, 50, 50, 400, 50, opts)
 })
 
-document.body.addEventListener('mouseup', function(evt) {
-  mousedown = false
+var startPosition
 
-  var vel = Vector(veloX.getVelocity() || 0, veloY.getVelocity() || 0)
-
-  phys.spring(vel, { x: evt.x, y: evt.y }, { x: 500, y: 500 })
-  //.then(phys.springTo({ x: 501, y: 501 }, {}))
+mc.on("panstart", function() {
+  phys.stop()
+  startPosition = phys.position()
 })
 
-document.body.addEventListener('mousemove', function(evt) {
-  if(mousedown) {
-    veloX.updatePosition(evt.x)
-    veloY.updatePosition(evt.y)
-    var rules = cssFunc({ x: evt.x, y: evt.y })
-    applyCss([document.getElementById('thing')], rules)
-  }
+mc.on('pan', function(evt) {
+  phys.position(
+    startPosition.x + evt.deltaX,
+    startPosition.y + evt.deltaY
+  )
 })
 
-// .then(phys.bounceTo({ x: 250, y: 250 }, { acceleration: 1000 }))
-// .then(phys.springTo({ x: 250, y: 250 }, {}))
+mc.on('panend', function(evt) {
+  phys.spring(400, 50, opts)
+})

@@ -1,19 +1,28 @@
 <html>
 <head>
   <title>rk4</title>
+  <style>
+    .object {
+      width: 50px;
+      height: 50px;
+      background-color: red;
+    }
+  </style>
 </head>
-<style>
-  #thing {
-     position: absolute;
-     top: 0;
-     left: 0;
-     background-color: blue;
-     height: 10px;
-     width: 10px;
-  }
-</style>
 <body>
-  <div id="thing"></div>
-<script src="/scripts/main.js"></script>
+  Spring Example
+  Tension
+  <div class="example1">
+    <input type="number" value="100" class="tension" />
+    Damping
+    <input type="number" value="10" class="damping" />
+    <button class="animate">animate</button>
+    <div class="container">
+      <div class="object"></div>
+      <div class="destination"></div>
+    </div>
+  </div>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="/scripts/main.js"></script>
 </body>
 </html>

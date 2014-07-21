@@ -1,30 +1,47 @@
-var phys = new Physics($('.menu'))
-  .style('translateY', function(pos) { return pos.y })
+var Physics = require('../../lib')
+  , Hammer = require('hammerjs')
+  , mc = new Hammer.Manager($('.example1 .object')[0]);
 
-var lastY
+mc.add( new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 0 }) );
 
-$(window).on('touchstart', function(evt) {
-  lastX = evt.touches[0].pageY
+var phys = new Physics($('.example1 .object'))
+var startPosition
+
+phys.style('translateX', function(pos) { return pos.x + 'px' })
+    .style('translatey', function(pos) { return pos.y + 'px'})
+
+mc.on("panstart", function() {
   phys.stop()
+  startPosition = phys.position()
 })
 
-$(window).on('touchmove', function(evt) {
-  var currentY = evt.touches[0].pageY
-    , delta = currentY - lastY
+mc.on('pan', function(evt) {
+  phys.position(
+    startPosition.x + evt.deltaX,
+    startPosition.y + evt.deltaY
+  )
+})
 
-  phys.position(0, phys.position() + delta)
-  lastY = currentY
-}
-
-$(window).on('touchend', function(evt) {
-  var velocity = phys.velocity()
-
-  phys2.attachSpring(phys, { seperation, tension, damping })
-
-  if(velocity.y < 0) {
-    phys.spring(0, 0, opts)
-  } else if(velocity.y > 0) {
-    phys.accelerate(0, 0, opts)
-      .then(phys.bounce.fn({ times: 1, acceleration: 2000 }))
+mc.on('panend', function(evt) {
+  var veloY = phys.velocity().y
+  if(veloY < 0) {
+    phys.spring()
+  } else if(velocityY > 0) {
+    phys.accelerate({ bounce: true, damping: 0.3, minBounceDistance: 100 })
   }
 })
+
+phys
+  .decelerate(options)
+  .then(phys.spring(opts))
+
+animate: {
+  behavior: 'spring'
+  endConditions: ['atRest', 'atDestination']
+  start: { x, y }
+  destination: { x, y }
+  behaviorOptions: {
+    tension: 123
+    damping: 10
+  }
+}

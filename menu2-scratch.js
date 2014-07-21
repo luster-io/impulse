@@ -1,35 +1,37 @@
-var renderer = new Physics.Renderer($('.menu'))
-  .style('translateX', function(pos) { pos })
+var phys = phys(els)
+   .style({
+     translateX: function(pos) { pos.x },
+     translateY: function(pos) { pos.y }
+   })
 
-var phys = new Physics('1d', phys.renderer)
-  , lastX
+var interaction
 
-phys.position(0)
+var decelerate = phys.deccelerate(opts)
+  .to(function(s) {
+    return {
+      x: 0,
+      y: (s.velocity.y < 0) ? 0 : 500
+    }
+  }).start
 
-$(window).on('touchstart', function(evt) {
-  lastX = evt.touches[0].pageY
-  phys.interact()
+var spring = phys.spring({ tension: 100, damping: 10 }).start
+
+
+var interact
+mc.on('panstart', function(evt) {
+  interact = phys.interact()
+  interact.start()
 })
 
-$(window).on('touchmove', function(evt) {
-  var currentY = evt.touches[0].pageY
-    , delta = currentY - lastY
-
-  phys.position(phys.position() + delta)
-  lastY = currentY
+mc.on('pan', function(evt) {
+  interact.delta(
+    evt.deltaX,
+    evt.deltaY
+  )
 })
 
-$(window).on('touchend', function(evt) {
-  var velocity = phys.velocity()
-
-  if(velocity < 0) {
-    phys.spring(opts).to(0).start()
-  } else if(velocity > 0) {
-    phys.accelerate({ acceleration: 1000 }).to(height)
-    .start()
-      .then(
-        phys.bounce({ times: 1, acceleration: 2000, damping: .3 })
-      )
-  }
-}) 
- 
+mc.on('panend', function(evt) {
+  interact.end()
+    .then(decelerate)
+    .then(spring)
+})
