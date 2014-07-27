@@ -30,18 +30,3 @@ mc.on('panend', function(evt) {
     phys.accelerate({ bounce: true, damping: 0.3, minBounceDistance: 100 })
   }
 })
-
-phys
-  .decelerate(options)
-  .then(phys.spring(opts))
-
-animate: {
-  behavior: 'spring'
-  endConditions: ['atRest', 'atDestination']
-  start: { x, y }
-  destination: { x, y }
-  behaviorOptions: {
-    tension: 123
-    damping: 10
-  }
-}

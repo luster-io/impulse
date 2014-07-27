@@ -32,6 +32,6 @@
     "inherits": "~2.0.1",
     "raf-queue": "~0.2.0",
     "raf": "~2.0.1",
-    "es6-promise": "~1.0.0"
+    "promise": "~5.0.0"
   }
 }

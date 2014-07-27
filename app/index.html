@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>rk4</title>
@@ -6,92 +7,77 @@
   <style>
 
     body {
-      font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin: 0;
     }
-    .object {
-      width: 50px;
-      height: 50px;
+
+    .pull-down-menu {
+      position: fixed;
+      top: -100%;
+      left: 0;
+      bottom: 100%;
+      right: 0;
+      z-index: 4;
       background-color: red;
     }
-
-    h1 {
-      margin-top: 150px;
-      text-align: center;
-      font-weight: 200;
-      font-size: 60px;
-      margin-bottom: 20px;
-
-      background-image: -webkit-linear-gradient(90deg,#c94eef, #ff87f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      -webkit-font-smoothing: antialiased;
+    .nav-header {
+      position: fixed;
+      z-index: 5;
+      top: 0;
+      height: 50px;
+      left: 0;
+      right: 0;
+      background-color: #ccc;
+      /** if this isn't a render layer, we
+          can't touch it after we've touched it once :-S **/
+      -webkit-transform: translateZ(0);
     }
 
-    h2 {
-      text-align: center;
-      font-weight: normal;
-      font-weight: 300;
-      margin-top: 0px;
-      margin-bottom: 50px;
+    .hamburger-menu-handle {
+      position: absolute;
+      right: 20px;
+      top: 10px;
+      padding-left: 1.25em;
     }
 
-    .logo, .navigation, .explaination {
-      display: none;
+    .hamburger-menu-handle:before {
+      content: "";
+      position: absolute;
+      font-size: 28px;
+      top: 0.25em;
+      left: 0;
+      width: 1em;
+      height: 0.125em;
+      border-top: 0.375em double #000;
+      border-bottom: 0.125em solid #000;
     }
 
-    .actions {
-      text-align: center;
+    .close-handle {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background-color: blue;
     }
 
-    button {
-      border: 2px solid #e56cf4;
-      color: #e56cf4;
-      display: inline-block;
-      width: 120px;
-      background-color: white;
-      border-radius: 5px;
-      font-size: 15px;
-      padding: 8px 18px;
-      font-weight: 200;
+    .content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
     }
-
-    button.started {
-      margin-left: 50px;
-    }
-
-    .overview {
-      width: 600px;
-    }
-
   </style>
 </head>
 <body>
-  <div class="logo">LUSTER</div>
-  <div class="navigation">
-    <a class="examples">examples</a>
-    <a class="examples">Getting Started</a>
-    <a class="examples">API</a>
+  <div class="nav-header">
+    <div class="hamburger-menu-handle"></div>
   </div>
-  <h1>Luster Physics</h1>
-  <h3>Dynamic Physics Animations</h3>
-  <div class="actions">
-    <button class="github">github</button>
-    <button class="started">get started</button>
+  <div class="pull-down-menu">
+    <div class="close-handle">close</div>
   </div>
-
-  <h2>Getting Started<h2>
-
-
-  <div style="display: none;">
-    <p>Create dynamic animations that
-    feel like an extension of the user's motion.</p>
-
-    <p>Rather than animating properties for a set amount of time,
-    luster physics takes a start position, end position, and velocity.</p>
-
-    <p>That way, animations can flow naturally from the user's movements.</p>
-  </div>
-
+  <div class="content"></div>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="scripts/main.js"></script>
 </body>
 </html>

@@ -1,4 +1,62 @@
-##Physics(els)
+#Luster Physics
+
+  Create animations that flow naturally from the user's movements.
+
+  Rather than animating properties for a set amount of time,
+luster physics takes a start position, end position, and velocity.
+
+##example
+
+```
+var phys = Physics(el)
+  .style({
+    translateX: function(pos) { return pos.x }
+    translateY: function(pos) { return pos.y }
+  })
+//set a starting position
+phys.position(50, 50)
+
+phys.spring({ tension: 100, damping: 10 })
+  .to(100, 100).start()
+```
+
+More examples can be found [here](labs.luster.io/physics/examples)
+
+##Installation
+
+####Browserify
+```
+npm install luster-physics
+```
+
+####Bower
+
+```
+bower install luster-physics
+```
+Exposes a global called Physics
+
+####Component
+
+```
+component install luster-io/luster-physics
+```
+
+####Manually
+
+Download `build/luster-physics.js` or `build/luster-physics.js`
+
+```html
+  <script src="/scripts/luster-physics.js"></script>
+```
+
+Exposes a global called Physics
+
+##Documentation
+
+Documentation can be found [here](labs.luster.io/physics/examples)
+
+###Physics(els)
 
 ```
 var phys = Physics($('.myMenu'))
@@ -6,9 +64,9 @@ var phys = Physics(document.getElementById)
 ```
 
   Initializes a new physics object with a single element or
-an array like collection of elements.
+an array-like collection of elements (jQuery, NodeList, etc).
 
-##Physics(renderFn)
+###Physics(renderFn)
 
 ```
 var phys = Physics(function(position) {
@@ -16,10 +74,14 @@ var phys = Physics(function(position) {
 })
 ```
 
-  Initializes a new physics object with a render function.
+  Initializes a new physics object with a render function.  Whenever
+there is a change in the state of the physics object, the render function
+will be called.
 
-## phys.style(property, valueFn(position, elementIndex))
-## phys.style(cssObj)
+  PROTIP: This may be called more often than you actually want to draw to
+the page, so make sure your renderer will do debounce the updates.  
+
+### phys.style(property, valueFn(position, elementIndex))
 
 ```
 phys.style('translateX', function(pos) { return pos.x + 'px' })
@@ -35,57 +97,38 @@ yourself.
 second argument is the index of the element, since the function is called
 once for each item in the collection of elements.
 
-## phys.position()
+### phys.style(cssObj)
+
+  Style can also be an object of the style `{ cssProperty: valueFn, anotherProp: anotherValFn }`. 
+
+### phys.position()
 
   Gets the current position {x, y} of the physics object.
 
-## phys.position(x, y)
-
-  Set's the current position to {x, y}.  Changes made by this function
-will be rerendered, and, if a physics animation is currently running, will
-update the position of the object in the animation.
-
-
-
-## phys.velocity()
+### phys.velocity()
 
   Get's the current velocity of the object, if an animation is running, this
-will be the current velocity from the animation, if an animation isn't running, the
-velocity will be the velocity of from the user interacting (manually setting
-it's position).
+will be the current velocity from the animation.
 
   Get's the current velocity of the object, when interacting with the physics
 object (manually setting it's position) this velocity is kept up to date by
 calls to position.
 
-## phys.velocity(scalar)
-
-  This will set the velocity of the physics object to `scalar` units per second.
-The velocity will be in the same direction as it was previously.
-
-## phys.velocity(x, y)
-
-  This will set the velocity of the physics object to `vector` units per second.
-Setting velocity with an x and a y may change the direction the object is moving.
-
 # Spring Animation
 
-phys.spring(50, 100, { velocity:  })
-Options:
-  from: {x, y}, defaults to the currentPosition
-  tension: the spring's tension (default: 100)
-  damping: the springs damping (default: 10)
-  velocity: {x, y} (default: finalVelocityofLastAnimation or 0)
+####Options:
+  * **tension:** the spring's tension (default: 100)
+  * **damping:** the springs damping (default: 10)
+  
 ```
-//an example with tension and damping sliders
+var animation = phys.spring({ tension: 100, damping: 10 })
 ```
 
-phys.spring
-
-## phys.spring(x, y, opts)
+### phys.spring(opts)
 
   Springs from the object's current position, to x, y at the object's current
 velocity.
+
 
 # Accelerate
 
@@ -99,51 +142,51 @@ Options:
 Demo with all of the options as sliders, for testing.
 ```
 
-##
-# attract
-## phys.attract(, opts)
-
-options:
-  strength: scalar strength of attraction (default: 1)
-  friction: 1 means no friction, 0 is an immovable object (default: .999)
-
-  order: The power of inverse distance.
-  2 is inverse square (newtonian), 1 is linear, 0 is constant. (default: 2)
-
-  Instead of accelerating linearly in x and y, accelerate towards a point.
-This can simulate orbital dynamics.
-
-## phys.accelerate
+### phys.accelerate
   Returns a promise that will resolve when the physics object reaches the point x, y.
 
-## phys.accelerate(x, y, opts)
+### phys.accelerate(x, y, opts)
 
-# deccelerate
+## deccelerate
 
-## phys.deccelerate
+### phys.deccelerate
 
   Returns a promise that will resolve when the physics object has moved past point x, y.
 The promise will reject if the object deccelerates to a stop without reaching the point.
 Unless stopAtEnd is false, in which case it will never resolve, only reject if phys.stop
 is called.
 
-## phys.deccelerate(x, y, opts)
+### phys.deccelerate(x, y, opts)
   Deccelerate towards x, y starting from the current position, and at the current velocity.
+  
+##Animation
 
-## phys.attachOrbital(attach, startX, startY)
-options:
-  strength: scalar strength of attraction (default: 1)
-  friction: 1 means no friction, 0 is an immovable object (default: .999)
-  order: The power of inverse distance.
-  2 is inverse square (newtonian), 1 is linear, 0 is constant. (default: 2)
+###animation.to(x, y)
+###animation.to({ x, y })
 
-  Set initial position.
+   This sets the position that the animation is moving towards.  This defaults to
+the current position of the physics object.
 
-## phys.attachGravity(attach, velocity, startX, startY)
+###animation.from(x, y)
+###animation.from({ x, y })
 
-  Set initial position and velocity.
+   This sets the position that the animation starts at.  This defaults to
+the current position of the physics object.
 
-# attachSpring
+###animation.velocity(scalar)
+###animation.velocity(x, y)
+###animation.velocity({x, y})
+
+   This sets the initial velocity for the animation.  When only a scalar (Number) is passed in, it will default to moving in the direction from the start to the end position.  If not called, the velocity defaults to the current velocity of the physics object.
+   
+###animation.start()
+
+   Starts the animation running.  This will cancel any other running animations.
+This method is bound to `animation`, so you can conveniently pass it around without having to manually bind it.
+
+## phys.attachSpring(attachment, opts)
+
+  The `attachSpring` method works differently than other animation methods, in that it is constantly running, and responds to updates to the position of it's `attachment`.
 
 Options:
   tension: the spring's tension (default: 100)
@@ -152,27 +195,45 @@ Options:
   away, if further away it will spring towards it.
   offset: { x, y } offset from attachment's position
 
-## phys.attachSpring(attachment, opts)
+  `attachment` can be another physics object, or it can be a function that will return a position { x, y } when called.
 
-Attaches a spring to a physics object or function `attachment`. If `attachment`
-is a function, it should return always return the current { x, y } positions
+  Attaches a spring to a physics object or function `attachment`. If `attachment` is a function, it should return always return the current { x, y } positions
 of the thing you are attaching to.
 
-var spring = phys.attachSpring(attachment, opts)
+  Returns an `attachedSpring`, whose position and velocity can be updated as the animation is running.
 
-## Methods
+```
+var attachedSpring = phys.attachSpring(attachment, opts)
+```
 
-###spring.start()
+###attachedSpring.end()
 
-  This starts the spring running.
+  Stops the spring from running.
 
-###spring.position()
+###attachedSpring.position()
 
   Updates the position of the spring.  If the spring is running, this will
 affect the simulation.
 
-###spring.velocity(x, y)
+###attachedSpring.velocity(x, y)
 
-  Updates the velocity of the spring in flight.  If the spring is running, this will
-affect the simulation.
+  Updates the velocity of the spring in flight.  If the spring is running, this will affect the simulation.
+  
+## phys.interact()
 
+  If you want to allow a user to interact with a physics object, i.e. drag it around.  This will update the renderer with the position set by interact, and will record the final velocity.
+  
+###interaction.position(x, y)
+###interaction.position({ x, y })
+
+  Updates the position of the physics object.  This position, along with the time it occured will be used to calculate the velocity of the physics object.
+  
+###interaction.end()
+
+  Ends the interaction.  You can do this on touchend.  
+  
+
+
+
+##LICENSE
+ MIT -- Read LICENCE

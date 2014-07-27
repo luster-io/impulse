@@ -17,7 +17,6 @@ $(function() {
     mousedown = true
     interaction = phys.interact()
     interaction.start()
-
     startY = evt.touches[0].pageY - phys.position().y
   }
 
