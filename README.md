@@ -223,6 +223,15 @@ affect the simulation.
 
   If you want to allow a user to interact with a physics object, i.e. drag it around.  This will update the renderer with the position set by interact, and will record the final velocity.
   
+###interaction.start()
+
+  Starts the interaction, returns a promise that will fulfill when end is called
+or reject when the interaction is cancelled.
+
+###interaction.cancel()
+ 
+  Stops the interaction and rejects the promise returned by start.
+  
 ###interaction.position(x, y)
 ###interaction.position({ x, y })
 
@@ -230,7 +239,7 @@ affect the simulation.
   
 ###interaction.end()
 
-  Ends the interaction.  You can do this on touchend.  
+  Ends the interaction.  You can do this on touchend.  Returns a promise fulfilled with the final state of the interaction.  
   
 
 
