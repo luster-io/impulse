@@ -1,56 +1,75 @@
-$(function() {
-  var Physics = require('../../lib')
-  var menuHandle = document.querySelector('.nav-header')
-  var closeHandle = document.querySelector('.close-handle')
-  var menu = document.querySelector('.pull-down-menu')
+var Physics = require('../../lib')
+
+var phys = new Physics($('.pull-down-menu'))
+  .style('translateY', function(pos) { return pos.y + 'px' })
+
+var interaction
+  , startY
+  , mousedown = false
+  , isOpen = false
+  , moved = false
+
+function getY(evt) {
+  if(evt.touches)
+    return evt.touches[0].pageY
+  else
+    return evt.pageY
+}
+
+function start(evt) {
+  mousedown = true
+  moved = false
+  interaction = phys.interact()
+  interaction.start()
+  startY = getY(evt) - phys.position().y
+}
+
+function move(evt) {
+  if(!mousedown) return
+  var position = getY(evt) - startY
+    , height = window.innerHeight
+
+  evt.preventDefault()
+  moved = true
+
+  //ensure the user can't pull the menu down below the bottom of the page
+  interaction.position(0, Math.min(position, height))
+}
+
+function end(evt) {
+  if(!mousedown) return
   var height = window.innerHeight
+  interaction.end()
+  mousedown = false
 
-  var phys = new Physics(menu)
-  //only translateY, since the since the menu can't move horizontally
-  phys.style('translateY', function(pos) { return pos.y + 'px' })
-
-  var interaction
-    , startY
-    , mousedown = false
-
-  function start(evt) {
-    mousedown = true
-    interaction = phys.interact()
-    interaction.start()
-    startY = evt.touches[0].pageY - phys.position().y
+  //if the user touched one of the handles, but didn't move
+  //that's a tap, so we toggle the menu
+  if(!moved) {
+    phys.velocity(0, 2000)
+    isOpen = !isOpen
+  } else {
+    isOpen = phys.direction('down')
   }
 
-  function move(evt) {
-    evt.preventDefault()
-    var position = evt.touches[0].pageY - startY
-
-    //ensure the user can't pull the menu down below the bottom of the page
-    position = Math.min(position, height)
-    interaction.position(0, position)
+  if(isOpen) {
+    phys.accelerate({ acceleration: 1500, bounceAcceleration: 4000, bounce: moved })
+      .to(0, height).start()
+  } else {
+    phys.spring({ tension: 100, damping: 15 })
+      .to(0, 0).start()
   }
+}
 
-  function end(evt) {
-    interaction.end()
-    var position = phys.position().y
+var elements = document.querySelectorAll('.nav-header, .close-handle')
+elements = [].slice.call(elements)
 
-    // if the menu was moving up when the user released it,
-    // or if they released it with no velocity, and they released in the
-    // top half of the screen.
-    if(phys.direction('up') || (phys.atRest() && position > height / 2)) {
-      phys.spring({ tension: 100, damping: 15 })
-        .to(0, 0).start()
-    } else {
-      phys.accelerate({ acceleration: 1500, bounceAcceleration: 4000, bounce: true })
-        .to(0, height).start()
-    }
-  }
+elements.forEach(function(el) {
+  el.addEventListener('touchstart', start)
+  el.addEventListener('mousedown', start)
 
-  menuHandle.addEventListener('touchstart', start)
-  menuHandle.addEventListener('touchmove', move)
-  menuHandle.addEventListener('touchend', end)
+  el.addEventListener('touchmove', move)
+  window.addEventListener('mousemove', move)
 
-  closeHandle.addEventListener('touchstart', start)
-  closeHandle.addEventListener('touchmove', move)
-  closeHandle.addEventListener('touchend', end)
-
+  el.addEventListener('touchend', end)
+  window.addEventListener('mouseup', end)
 })
