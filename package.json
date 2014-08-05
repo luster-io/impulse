@@ -22,7 +22,8 @@
     "debowerify": "~0.5.2",
     "mocha": "~1.17.1",
     "should": "~4.0.4",
-    "jshint-stylish": "~0.1.5"
+    "jshint-stylish": "~0.1.5",
+    "benchmark": "~1.0.0"
   },
   "engines": {
     "node": ">=0.10.0"
