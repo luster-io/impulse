@@ -218,31 +218,45 @@ affect the simulation.
 ###attachedSpring.velocity(x, y)
 
   Updates the velocity of the spring in flight.  If the spring is running, this will affect the simulation.
-  
+
 ## phys.interact()
 
   If you want to allow a user to interact with a physics object, i.e. drag it around.  This will update the renderer with the position set by interact, and will record the final velocity.
-  
+
 ###interaction.start()
 
   Starts the interaction, returns a promise that will fulfill when end is called
 or reject when the interaction is cancelled.
 
 ###interaction.cancel()
- 
+
   Stops the interaction and rejects the promise returned by start.
-  
+
 ###interaction.position(x, y)
 ###interaction.position({ x, y })
 
   Updates the position of the physics object.  This position, along with the time it occured will be used to calculate the velocity of the physics object.
-  
+
 ###interaction.end()
 
-  Ends the interaction.  You can do this on touchend.  Returns a promise fulfilled with the final state of the interaction.  
-  
+  Ends the interaction.  You can do this on touchend.  Returns a promise fulfilled with the final state of the interaction.
 
+#TODO
 
+  CSS animation generator.  Sometimes you want a spring or acceleration animation, but you want it always starts with the same initial velocity and position.  In this case it would be much smarter to generate a css keyframe animation, and cache it.
+
+  Performance instrumenting.  Use something like, http://google.github.io/tracing-framework/, to get better insights into where the performance bottlenecks are.  The goal would be to be able to simulate 100's of springs
+  without any performance hit.
+
+  Constant testers.  Build a small app that allows you to test out different constants for springs, acceleration,  deceleration, etc.
+
+  More examples.  The more examples the better.  If you have an idea for an example you'd like to see created, create an issue.  If there's something you'd like to see, but you don't know if it's possible, create an issue!
+
+  Use analytical solution for acceleration and deceleration.  There's may be no need to run a physics simulation for acceleration and deceleration, since these are pretty easily computed analytically, which would be much faster than numeric integration.
+
+  Accumulator timestep with alpha smoothing.  Instead of just using whatever time the browser throws at us (not ideal) we should have a fixed timestep, integrate over those steps, and then linearly interpolate between states with unused time at each render, i.e. set timestep to 30ms, update every 16ms, and lerp any extra time.w
+
+  Try using some other integration methods, to see if they're worth doing.
 
 ##LICENSE
  MIT -- Read LICENCE

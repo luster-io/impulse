@@ -10,10 +10,7 @@ var interaction
   , moved = false
 
 function getY(evt) {
-  if(evt.touches)
-    return evt.touches[0].pageY
-  else
-    return evt.pageY
+  return (evt.touches) ? evt.touches[0].pageY : evt.pageY
 }
 
 function start(evt) {
