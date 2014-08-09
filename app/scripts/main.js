@@ -1,72 +1,56 @@
 var Physics = require('../../lib')
 
-var phys = new Physics($('.pull-down-menu'))
-  .style('translateY', function(pos) { return pos.y + 'px' })
+function PullDownMenu(menu, handles) {
+  this.phys = new Physics(menu)
+    .style('translateY', function(pos) { return pos.y + 'px' })
 
-var interaction
-  , startY
-  , mousedown = false
-  , isOpen = false
-  , moved = false
+  handles = [].slice.call(handles)
+  handles.forEach(this.setupHandle, this)
 
-function getY(evt) {
-  return (evt.touches) ? evt.touches[0].pageY : evt.pageY
+  this.isOpen = false
+  this.moved = false
+  this.boundry = new Physics.Boundry({ top: 0, bottom: window.innerHeight })
 }
 
-function start(evt) {
-  mousedown = true
-  moved = false
-  interaction = phys.interact()
-  interaction.start()
-  startY = getY(evt) - phys.position().y
+PullDownMenu.prototype.setupHandle = function(el) {
+  el.addEventListener('touchstart', this.start.bind(this))
+  el.addEventListener('mousedown', this.start.bind(this))
+
+  el.addEventListener('touchmove', this.move.bind(this))
+  window.addEventListener('mousemove', this.move.bind(this))
+
+  el.addEventListener('touchend', this.end.bind(this))
+  window.addEventListener('mouseup', this.end.bind(this))
 }
 
-function move(evt) {
-  if(!mousedown) return
-  var position = getY(evt) - startY
-    , height = window.innerHeight
+PullDownMenu.prototype.start = function(evt) {
+  this.mousedown = true
+  this.interaction = this.phys.interact({ boundry: this.boundry, damping: 0 })
+  this.interaction.start(evt)
+}
 
+PullDownMenu.prototype.move = function(evt) {
+  if(!this.mousedown) return
   evt.preventDefault()
-  moved = true
-
-  //ensure the user can't pull the menu down below the bottom of the page
-  interaction.position(0, Math.min(position, height))
+  this.moved = true
+  this.interaction.update(evt)
 }
 
-function end(evt) {
-  if(!mousedown) return
-  var height = window.innerHeight
-  interaction.end()
-  mousedown = false
+PullDownMenu.prototype.end = function(evt) {
+  if(!this.mousedown) return
+  this.interaction.end()
+  this.mousedown = false
 
   //if the user touched one of the handles, but didn't move
   //that's a tap, so we toggle the menu
-  if(!moved) {
-    phys.velocity(0, 2000)
-    isOpen = !isOpen
-  } else {
-    isOpen = phys.direction('down')
-  }
+  this.isOpen = (!this.moved) ? !this.isOpen : this.phys.direction('down')
 
-  if(isOpen) {
-    phys.accelerate({ acceleration: 1500, bounceAcceleration: 4000, bounce: moved })
-      .to(0, height).start()
+  if(this.isOpen) {
+    this.phys.accelerate({ acceleration: 1500, bounceAcceleration: 4000, bounce: this.moved })
+      .to(this.boundry).start()
   } else {
-    phys.spring({ tension: 100, damping: 15 })
-      .to(0, 0).start()
+    this.phys.spring({ tension: 100, damping: 15 })
+      .to(this.boundry).start()
   }
 }
-
-var elements = document.querySelectorAll('.nav-header, .close-handle')
-elements = [].slice.call(elements)
-
-elements.forEach(function(el) {
-  el.addEventListener('touchstart', start)
-  el.addEventListener('mousedown', start)
-
-  el.addEventListener('touchmove', move)
-  window.addEventListener('mousemove', move)
-
-  el.addEventListener('touchend', end)
-  window.addEventListener('mouseup', end)
-})
+var menu = new PullDownMenu($('.pull-down-menu'), $('.nav-header, .close-handle'))
