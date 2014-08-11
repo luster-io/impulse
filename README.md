@@ -119,7 +119,6 @@ calls to position.
 ####Options:
   * **tension:** the spring's tension (default: 100)
   * **damping:** the springs damping (default: 10)
-  
 ```
 var animation = phys.spring({ tension: 100, damping: 10 })
 ```
@@ -158,7 +157,7 @@ is called.
 
 ### phys.deccelerate(x, y, opts)
   Deccelerate towards x, y starting from the current position, and at the current velocity.
-  
+
 ##Animation
 
 ###animation.to(x, y)
@@ -177,8 +176,8 @@ the current position of the physics object.
 ###animation.velocity(x, y)
 ###animation.velocity({x, y})
 
-   This sets the initial velocity for the animation.  When only a scalar (Number) is passed in, it will default to moving in the direction from the start to the end position.  If not called, the velocity defaults to the current velocity of the physics object.
-   
+  sThis sets the initial velocity for the animation.  When only a scalar (Number) is passed in, it will default to moving in the direction from the start to the end position.  If not called, the velocity defaults to the current velocity of the physics object.
+
 ###animation.start()
 
    Starts the animation running.  This will cancel any other running animations.
@@ -248,15 +247,13 @@ or reject when the interaction is cancelled.
   Performance instrumenting.  Use something like, http://google.github.io/tracing-framework/, to get better insights into where the performance bottlenecks are.  The goal would be to be able to simulate 100's of springs
   without any performance hit.
 
-  Constant testers.  Build a small app that allows you to test out different constants for springs, acceleration,  deceleration, etc.
+  Angular rotation.  Add a way to do angular rotation.
 
   More examples.  The more examples the better.  If you have an idea for an example you'd like to see created, create an issue.  If there's something you'd like to see, but you don't know if it's possible, create an issue!
 
   Use analytical solution for acceleration and deceleration.  There's may be no need to run a physics simulation for acceleration and deceleration, since these are pretty easily computed analytically, which would be much faster than numeric integration.
 
-  Accumulator timestep with alpha smoothing.  Instead of just using whatever time the browser throws at us (not ideal) we should have a fixed timestep, integrate over those steps, and then linearly interpolate between states with unused time at each render, i.e. set timestep to 30ms, update every 16ms, and lerp any extra time.w
-
-  Try using some other integration methods, to see if they're worth doing.
+  Accumulator timestep with alpha smoothing.  Instead of just using whatever time the browser throws at us we should have a fixed timestep, integrate over those steps, and then linearly interpolate between states with unused time at each render, i.e. set timestep to Yms, update every Xms, and interpolate any extra time.
 
 ##LICENSE
  MIT -- Read LICENCE

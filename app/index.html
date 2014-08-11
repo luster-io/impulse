@@ -8,6 +8,7 @@
 
     body {
       margin: 0;
+      font-family: 'Raleway', 'Helvetica Neue', Helvetica, sans-serif;
     }
 
     .pull-down-menu {
@@ -19,6 +20,7 @@
       z-index: 4;
       background-color: red;
     }
+
     .nav-header {
       position: fixed;
       z-index: 5;
@@ -27,8 +29,8 @@
       left: 0;
       right: 0;
       background-color: #ccc;
-      /** if this isn't a render layer, we
-          can't touch it after we've touched it once :-S **/
+      /** BUG: if this isn't a render layer, we
+          can't get touch events after we've moved the menu :-S **/
       -webkit-transform: translateZ(0);
     }
 
@@ -76,7 +78,6 @@
   <div class="pull-down-menu">
     <div class="close-handle">close</div>
   </div>
-  <div class="content"></div>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script src="scripts/main.js"></script>
 </body>

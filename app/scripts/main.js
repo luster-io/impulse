@@ -1,56 +1,45 @@
-var Physics = require('../../lib')
+require('./pull-down')
+// var Physics = require('../../lib')
+//   , el = $('.object')[0]
 
-function PullDownMenu(menu, handles) {
-  this.phys = new Physics(menu)
-    .style('translateY', function(pos) { return pos.y + 'px' })
+// var phys = Physics(el)
+//   .style({
+//     translateX: function(pos) { return pos.x + 'px'},
+//     translateY: function(pos) { return pos.y + 'px' }
+//   })
 
-  handles = [].slice.call(handles)
-  handles.forEach(this.setupHandle, this)
+// el.addEventListener('touchstart', start)
+// el.addEventListener('touchmove', move)
+// el.addEventListener('touchend', end)
 
-  this.isOpen = false
-  this.moved = false
-  this.boundry = new Physics.Boundry({ top: 0, bottom: window.innerHeight })
-}
+// el.addEventListener('mousedown', start)
+// window.addEventListener('mousemove', move)
+// window.addEventListener('mouseup', end)
 
-PullDownMenu.prototype.setupHandle = function(el) {
-  el.addEventListener('touchstart', this.start.bind(this))
-  el.addEventListener('mousedown', this.start.bind(this))
+// var mousedown = false
+//   , interaction
 
-  el.addEventListener('touchmove', this.move.bind(this))
-  window.addEventListener('mousemove', this.move.bind(this))
+// function start(evt) {
+//   evt.preventDefault()
+//   mousedown = true
+//   interaction = phys.interact()
+//   interaction.start(evt)
+// }
 
-  el.addEventListener('touchend', this.end.bind(this))
-  window.addEventListener('mouseup', this.end.bind(this))
-}
+// function move(evt) {
+//   if(!mousedown) return
+//   evt.preventDefault()
+//   interaction.update(evt)
+// }
 
-PullDownMenu.prototype.start = function(evt) {
-  this.mousedown = true
-  this.interaction = this.phys.interact({ boundry: this.boundry, damping: 0 })
-  this.interaction.start(evt)
-}
+// function end() {
+//   if(!mousedown) return
+//   mousedown = false
+//   interaction.end()
 
-PullDownMenu.prototype.move = function(evt) {
-  if(!this.mousedown) return
-  evt.preventDefault()
-  this.moved = true
-  this.interaction.update(evt)
-}
-
-PullDownMenu.prototype.end = function(evt) {
-  if(!this.mousedown) return
-  this.interaction.end()
-  this.mousedown = false
-
-  //if the user touched one of the handles, but didn't move
-  //that's a tap, so we toggle the menu
-  this.isOpen = (!this.moved) ? !this.isOpen : this.phys.direction('down')
-
-  if(this.isOpen) {
-    this.phys.accelerate({ acceleration: 1500, bounceAcceleration: 4000, bounce: this.moved })
-      .to(this.boundry).start()
-  } else {
-    this.phys.spring({ tension: 100, damping: 15 })
-      .to(this.boundry).start()
-  }
-}
-var menu = new PullDownMenu($('.pull-down-menu'), $('.nav-header, .close-handle'))
+//   phys.spring({
+//     tension: parseFloat($('.tension').val()),
+//     damping: parseFloat($('.damping').val())
+//   })
+//     .to(0, 0).start()
+// }
