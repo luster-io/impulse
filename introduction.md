@@ -1,6 +1,5 @@
-  Luster Physics is a library that allows you to create high performance
-dynamic physics based animations in javascript.
-
+  Luster Physics is a library for building dynamic physics based interactions,
+specifically for mobile.
 
 How is this different from jquery animate, velocity.js, etc?
 ---------------------------------------------------------

@@ -22,96 +22,80 @@ bars), which when clicked or dragged, will open and close the menu.
 
   Add some basic css.  To keep this post reasonable I'm not going to explain
 everything about the css.  The important thing is that it creates a menu that
-is the full height and width of the viewport, and moves it off screen, above
+is the full height and width of the viewport, and shifts it off screen, above
 the viewport.
 
-  Lets start by getting the touch event handling boilerplate out of the way.
-How to properly handle gestures is out of the scope of this tutorial, so I'm
-just going to start out with some simple, easy to understand boilerplate
-to handle both touch and mouse events.
-
-https://gist.github.com/xcoderzach/99306bdf26d60cfbf71d
-
-  There is a ton more you can do to ensure that your properly detecting a gestures
-intent.  I would recomend checking out hammer.js.
-
-But now, on to the physics animations. In the constructor, we'll create a physics
-animation for the menu.
+  We'll start off by creating a physics object for the menu, since the menu is
+going to be vertical, we only need to add css to animate on the y axis.
 
 ```javascript
-  this.menu = new Physics(menu)
+  var menu = new Physics(menuEl)
     .style('translateY', function(position) { return position.y + 'px' })
-}
 ```
 
   What this does is, as the position of the menu changes, (being dragged,
 accelerated, or sprung), we update the css `transform: translateY` property, to the
 current y position.
 
-```javascript
-  this.boundry = Physics.Boundry({ top: 0, bottom: window.innerHeight })
-  this.interaction = this.menu.interact({ boundry: this.boundry })
-  this.interaction.start(event)
-```
-
-  This interaction will allow the user to drag the menu between the top of the
-window and the bottom.  The boundry is necessary to prevent the user from
-dragging the menu past the bottom of the screen.
-
-  Now when a `move` event happens, we update the interaction with the current
-event.
+  Next we'll create a boundry for where we want the menu to be dragged.
+Esentially we're preventing the menu from being pulled past the bottom of
+the screen.
 
 ```javascript
-  this.interaction.update(event)
+  var boundry = Physics.Boundry({ top: 0, bottom: window.innerHeight })
 ```
 
-  In the background, Luster Physics takes the eevent and uses it to  render
-and calculate the velocity of the user's movement.
-
-  Once we're done we end the interaction, so that a final velocity calculation
-is produced.
+  Now, to build to the actual interaction, we start off by making the menu
+draggable within our boundry.  We specify `handles`, which are the elements
+that we interact with to drag the menu.  In this case, that's the hamburger
+menu, and the `close` bar on the bottom.
 
 ```javascript
-  this.interaction.end()
+var drag = menu.drag({ handle: handleEls, boundry: boundry })
 ```
+
+  In the background, Luster Physics takes the user input and uses it to move
+the menu and calculate the velocity of the user's movements.
 
   If you run this code right now, you can pull the menu open by dragging
 the hambuger menu, but once you let go it just sticks.  The next step is
 to create an animation that flows from the user's movement.
 
-  Like I said earlier, we want to acclerate down and bounce when opened, and
-spring back up when closed. `menu.direction('down')` will return `true` if the
-object is moving down.  So we just use an `if` to either accelerate or spring.
+  The next step is to animate the menu, once the user has stopped dragging.
 
 ```javascript
-  this.isOpen = this.menu.direction('down')
-  if(this.isOpen) {
-    this.menu.accelerate({ acceleration: 2500, bounce: true })
-      .to(0, this.boundry.bottom).start()
+function end() {
+  if(drag.moved()) {
+    isOpen = menu.direction('down')
   } else {
-    this.menu.spring({ tension: 100, damping: 15 })
-      .to(0, this.boundry.top).start()
+    isOpen = !isOpen
   }
+
+  if(isOpen) {
+    menu.accelerate({ acceleration: 1500, bounceAcceleration: 4000, bounce: true })
+      .to(0, boundry.bottom).start()
+  } else {
+    menu.spring({ tension: 100, damping: 15 })
+      .to(0, boundry.top).start()
+  }
+}
+
+drag.on('end', end)
 ```
+
+  The end function we've defined here check's if the user actually moved while
+dragging.  If they moved the menu, we determine whether to open or close the
+menu based on whether the menu's is currently moving up or down.  If they
+didn't move at all(essentially a tap), we just toggle the open state of the
+menu.
+
+  Once we know if the menu is opening or closing, we either accelerate to the
+bottom, or spring to the top.
 
   Most of the options (tension, damping, acceleration, etc) are values that I
 found by playing around with the numbers until I found something that felt
 good.  It's important that you do that yourself, so that the feel of your
 interactions fit with your app.
-
-  Now the last thing we need to do is make sure the menu toggles open when
-tapped.  To do that we'll just check if the user started a touch interaction
-without moving, you could also use a click event, however some mobile devices
-have a ~300ms delay between when the user clicks and when the event fires.
-
-  Esentially if the user just tapped, we'll just toggle the isOpen property.
-
-```javascript
-  if(this.moved)
-    this.isOpen = this.menu.direction('down')
-  else
-    this.isOpen = !this.isOpen
-```
 
   So now we should have working pull down menu with a nice bounce.
 

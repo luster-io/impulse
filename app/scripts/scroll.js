@@ -1,5 +1,5 @@
 var Physics = require('luster-physics')
-var menuEl = document.querySelector('.pull-down-menu')
+var scrollEl = document.querySelector('.pull-down-menu')
 var handleEls = document.querySelectorAll('.nav-header, .close-handle')
 var isOpen = false
 var boundry = new Physics.Boundry({ top: 0, bottom: window.innerHeight, left: 0, right: 0 })

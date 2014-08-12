@@ -243,6 +243,9 @@ or reject when the interaction is cancelled.
 
 
 #TODO
+
+  Add a `drag` method that handles the events for you.
+
   Throw error if using renderer and no styles are defined.
 
   CSS animation generator.  Sometimes you want a spring or acceleration animation, but you want it always starts with the same initial velocity and position.  In this case it would be much smarter to generate a css keyframe animation, and cache it.
