@@ -10,8 +10,8 @@ luster physics takes a start position, end position, and velocity.
 ```
 var phys = Physics(el)
   .style({
-    translateX: function(pos) { return pos.x }
-    translateY: function(pos) { return pos.y }
+    translateX: function(pos) { return pos.x + 'px' },
+    translateY: function(pos) { return pos.y + 'px' }
   })
 //set a starting position
 phys.position(50, 50)
@@ -240,7 +240,10 @@ or reject when the interaction is cancelled.
 
   Ends the interaction.  You can do this on touchend.  Returns a promise fulfilled with the final state of the interaction.
 
+
+
 #TODO
+  Throw error if using renderer and no styles are defined.
 
   CSS animation generator.  Sometimes you want a spring or acceleration animation, but you want it always starts with the same initial velocity and position.  In this case it would be much smarter to generate a css keyframe animation, and cache it.
 
