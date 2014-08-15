@@ -13,6 +13,8 @@
     "inherits": "~2.0.1",
     "raf": "~2.0.1",
     "promise": "~5.0.0",
-    "component-emitter": "~1.1.3"
+    "component-emitter": "~1.1.3",
+    "lodash.defaults": "~2.4.1",
+    "touch-velocity": "0.0.2"
   }
 }
