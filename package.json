@@ -1,38 +1,20 @@
 {
-  "name": "rk4",
-  "version": "0.0.0",
+  "name": "impulse",
+  "version": "0.0.2",
   "main": "lib/index.js",
-  "devDependencies": {
-    "gulp": "3.5.2",
-    "gulp-load-plugins": "~0.3.0",
-    "gulp-browserify": "~0.4.4",
-    "gulp-util": "~2.2.14",
-    "gulp-autoprefixer": "~0.0.6",
-    "gulp-csso": "~0.2.3",
-    "gulp-jshint": "~1.4.0",
-    "gulp-imagemin": "~0.1.5",
-    "gulp-clean": "~0.2.4",
-    "gulp-uglify": "~0.2.1",
-    "gulp-concat": "~2.1.7",
-    "gulp-cache": "~0.1.1",
-    "gulp-sass": "~0.7.0",
-    "gulp-size": "~0.1.3",
-    "gulp-connect": "~0.3.1",
-    "browserify": "~3.29.0",
-    "debowerify": "~0.5.2",
-    "mocha": "~1.17.1",
-    "should": "~4.0.4",
-    "jshint-stylish": "~0.1.5",
-    "benchmark": "~1.0.0"
+  "scripts": {
+    "build": "browserify lib/index.js -s impulse > dist/impulse.js",
+    "build-min": "ccjs dist/impulse.js --compilation_level=SIMPLE_OPTIMIZATIONS > dist/impulse.min.js"
   },
   "engines": {
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "tiny-emitter": "~0.1.12",
     "inherits": "~2.0.1",
-    "raf-queue": "~0.2.0",
     "raf": "~2.0.1",
-    "promise": "~5.0.0"
+    "promise": "~5.0.0",
+    "component-emitter": "~1.1.3",
+    "lodash.defaults": "~2.4.1",
+    "touch-velocity": "0.0.2"
   }
 }

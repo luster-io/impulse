@@ -1,17 +1,16 @@
-#Luster Physics
+#Impulse
 
   Create animations that flow naturally from the user's movements.
 
   Rather than animating properties for a set amount of time,
-luster physics takes a start position, end position, and velocity.
+impulse takes a start position, end position, and velocity.
 
 ##example
 
 ```
-var phys = Physics(el)
+var physicsObject = Impulse(el)
   .style({
-    translateX: function(pos) { return pos.x }
-    translateY: function(pos) { return pos.y }
+    translate: function(x, y) { return x + 'px, ' + y + 'px' },
   })
 //set a starting position
 phys.position(50, 50)
@@ -20,56 +19,71 @@ phys.spring({ tension: 100, damping: 10 })
   .to(100, 100).start()
 ```
 
-More examples can be found [here](labs.luster.io/physics/examples)
+More examples can be found [here](impulse.luster.io/physics/examples)
+
 
 ##Installation
 
 ####Browserify
 ```
-npm install luster-physics
+npm install impulse
 ```
 
 ####Bower
 
 ```
-bower install luster-physics
+bower install impulse
 ```
 Exposes a global called Physics
 
 ####Component
 
 ```
-component install luster-io/luster-physics
+component install luster-io/impulse
 ```
 
 ####Manually
 
-Download `build/luster-physics.js` or `build/luster-physics.js`
+Get `build/impulse.js` or `build/impulse.min.js` from github.
 
 ```html
-  <script src="/scripts/luster-physics.js"></script>
+  <script src="/scripts/impulse.js"></script>
 ```
 
-Exposes a global called Physics
+Exposes a global called impulse
+
+##High Level Explanation
+
+  Calling impulse on an element or set of elements returns a PhysicsObject.
+A physics object maintains it's own position and velocity.  You can interact
+with a PhysicsObject (drag, pan, etc), and animate it.  Animations take
+the current position and velocity of the PhysicsObject as a starting point, and
+animate to a user defined position.
+
+  This makes the animations flow naturally from the user's actions.
+
+  For example a user can drag an element around.  Once they're done dragging,
+the next animation will start from the position and velocity that they left off.
+Making the animation feel like a natural extension of their movement.
 
 ##Documentation
 
 Documentation can be found [here](labs.luster.io/physics/examples)
 
-###Physics(els)
+###Impulse(els)
 
 ```
-var phys = Physics($('.myMenu'))
-var phys = Physics(document.getElementById)
+var menu = Impulse($('.myMenu'))
+var scroller = Impulse(document.querySelector('.myScroller'))
 ```
 
-  Initializes a new physics object with a single element or
+  Initializes a new `impulse` object with a single element or
 an array-like collection of elements (jQuery, NodeList, etc).
 
-###Physics(renderFn)
+###Impulse(renderFn)
 
 ```
-var phys = Physics(function(position) {
+var custom = Impulse(function(position) {
   //maybe pass the position to Facebook React, Ember, or d3 here.
 })
 ```
@@ -79,16 +93,16 @@ there is a change in the state of the physics object, the render function
 will be called.
 
   PROTIP: This may be called more often than you actually want to draw to
-the page, so make sure your renderer will do debounce the updates.  
+the page, so make sure your renderer will do debounce the updates.
 
-### phys.style(property, valueFn(position, elementIndex))
+### imp.style(property, valueFn)
 
 ```
-phys.style('translateX', function(pos) { return pos.x + 'px' })
+impulse.style('translateX', function(x, y, index) { return x + 'px' })
 ```
 
-  Sets the css property in argument one to the value returned by the function
-in argument two, for every element passed into the constructor, every time the
+  Sets the css property in the first argument to the value returned by the function
+in the second, for every element passed into the constructor, every time the
 physics object's position changes. If you set a custom render function in the
 constructor this method doesn't do anything, since you're manually rendering
 yourself.
@@ -97,15 +111,16 @@ yourself.
 second argument is the index of the element, since the function is called
 once for each item in the collection of elements.
 
-### phys.style(cssObj)
+### impulse.style(cssObj)
 
-  Style can also be an object of the style `{ cssProperty: valueFn, anotherProp: anotherValFn }`. 
+  Style can also be an object of the style `{ cssProperty: valueFn,
+anotherProp: anotherValFn }`.
 
-### phys.position()
+### impulse.position()
 
   Gets the current position {x, y} of the physics object.
 
-### phys.velocity()
+### impulse.velocity()
 
   Get's the current velocity of the object, if an animation is running, this
 will be the current velocity from the animation.
@@ -114,17 +129,18 @@ will be the current velocity from the animation.
 object (manually setting it's position) this velocity is kept up to date by
 calls to position.
 
-# Spring Animation
+##Animations
+
+###Spring
 
 ####Options:
   * **tension:** the spring's tension (default: 100)
   * **damping:** the springs damping (default: 10)
-  
 ```
-var animation = phys.spring({ tension: 100, damping: 10 })
+var animation = impulse.spring({ tension: 100, damping: 10 })
 ```
 
-### phys.spring(opts)
+### impulse.spring(opts)
 
   Springs from the object's current position, to x, y at the object's current
 velocity.
@@ -135,31 +151,24 @@ velocity.
 Options:
   bounce: (default: true)
   damping: amount to damp the velocity on each bounce
-  minBounceVelocity: 100 (default: 100)
+  minBounceHeight: 100 (default: 100)
   acceleration: { x, y } how fast to accelerate in each of the y, x
 
-```
-Demo with all of the options as sliders, for testing.
-```
+### phys.accelerate(opts)
 
-### phys.accelerate
   Returns a promise that will resolve when the physics object reaches the point x, y.
-
-### phys.accelerate(x, y, opts)
 
 ## deccelerate
 
 ### phys.deccelerate
 
   Returns a promise that will resolve when the physics object has moved past point x, y.
-The promise will reject if the object deccelerates to a stop without reaching the point.
 Unless stopAtEnd is false, in which case it will never resolve, only reject if phys.stop
 is called.
 
 ### phys.deccelerate(x, y, opts)
   Deccelerate towards x, y starting from the current position, and at the current velocity.
-  
-##Animation
+
 
 ###animation.to(x, y)
 ###animation.to({ x, y })
@@ -177,8 +186,8 @@ the current position of the physics object.
 ###animation.velocity(x, y)
 ###animation.velocity({x, y})
 
-   This sets the initial velocity for the animation.  When only a scalar (Number) is passed in, it will default to moving in the direction from the start to the end position.  If not called, the velocity defaults to the current velocity of the physics object.
-   
+  sThis sets the initial velocity for the animation.  When only a scalar (Number) is passed in, it will default to moving in the direction from the start to the end position.  If not called, the velocity defaults to the current velocity of the physics object.
+
 ###animation.start()
 
    Starts the animation running.  This will cancel any other running animations.
@@ -241,22 +250,26 @@ or reject when the interaction is cancelled.
 
   Ends the interaction.  You can do this on touchend.  Returns a promise fulfilled with the final state of the interaction.
 
+
+
 #TODO
+
+  Add a `drag` method that handles the events for you.
+
+  Throw error if using renderer and no styles are defined.
 
   CSS animation generator.  Sometimes you want a spring or acceleration animation, but you want it always starts with the same initial velocity and position.  In this case it would be much smarter to generate a css keyframe animation, and cache it.
 
   Performance instrumenting.  Use something like, http://google.github.io/tracing-framework/, to get better insights into where the performance bottlenecks are.  The goal would be to be able to simulate 100's of springs
   without any performance hit.
 
-  Constant testers.  Build a small app that allows you to test out different constants for springs, acceleration,  deceleration, etc.
+  Angular rotation.  Add a way to do angular rotation.
 
   More examples.  The more examples the better.  If you have an idea for an example you'd like to see created, create an issue.  If there's something you'd like to see, but you don't know if it's possible, create an issue!
 
   Use analytical solution for acceleration and deceleration.  There's may be no need to run a physics simulation for acceleration and deceleration, since these are pretty easily computed analytically, which would be much faster than numeric integration.
 
-  Accumulator timestep with alpha smoothing.  Instead of just using whatever time the browser throws at us (not ideal) we should have a fixed timestep, integrate over those steps, and then linearly interpolate between states with unused time at each render, i.e. set timestep to 30ms, update every 16ms, and lerp any extra time.w
-
-  Try using some other integration methods, to see if they're worth doing.
+  Accumulator timestep with alpha smoothing.  Instead of just using whatever time the browser throws at us we should have a fixed timestep, integrate over those steps, and then linearly interpolate between states with unused time at each render, i.e. set timestep to Yms, update every Xms, and interpolate any extra time.
 
 ##LICENSE
  MIT -- Read LICENCE

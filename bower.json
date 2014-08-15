@@ -1,11 +1,32 @@
 {
-  "name": "rk4",
-  "version": "0.0.0",
-  "dependencies": {
-    "foundation": ">=5.1.1",
-    "jquery": ">=2.1.0",
-    "lodash": ">=2.4.1",
-    "backbone": ">=1.1.0"
-  }
+  "name": "impulse",
+  "version": "0.0.1",
+  "dependencies": {},
+  "homepage": "https://github.com/luster-io/physics",
+  "authors": [
+    "Zach Smith <x.coder.zach@gmail.com>"
+  ],
+  "description": "Impulse physics animations.",
+  "main": "dist/impulse.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "physics",
+    "animation",
+    "dynamic",
+    "interaction",
+    "touch"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ]
 }
-
