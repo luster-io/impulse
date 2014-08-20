@@ -3,8 +3,8 @@
   "version": "0.0.3",
   "main": "lib/index.js",
   "scripts": {
-    "build": "browserify lib/index.js -s impulse > dist/impulse.js",
-    "build-min": "ccjs dist/impulse.js --compilation_level=SIMPLE_OPTIMIZATIONS > dist/impulse.min.js"
+    "build": "browserify lib/index.js -s Impulse > impulse.js",
+    "build-min": "ccjs impulse.js --compilation_level=SIMPLE_OPTIMIZATIONS > impulse.min.js"
   },
   "engines": {
     "node": ">=0.10.0"

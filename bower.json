@@ -7,7 +7,7 @@
     "Zach Smith <x.coder.zach@gmail.com>"
   ],
   "description": "Impulse physics animations.",
-  "main": "dist/impulse.js",
+  "main": "impulse.js",
   "moduleType": [
     "amd",
     "globals",
