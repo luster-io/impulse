@@ -81,6 +81,8 @@ possible, please create an issue.  Maybe we can find a way to build it!
                                                              requestAnimationFrame
                                                              no-ops)
 
+  Rename `damping` to `restitution` for acclerate.
+
   Throw error if using renderer and no styles are defined?
 
   CSS animation generator.  Sometimes you want a spring or acceleration
