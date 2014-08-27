@@ -8,7 +8,7 @@ impulse takes a start position, end position, and velocity.
 ##example
 
 ```
-var physicsObject = Impulse(el)
+var ball = Impulse(document.querySelector('.ball'))
   .style({
     translate: function(x, y) { return x + 'px, ' + y + 'px' },
   })
