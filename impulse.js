@@ -11,7 +11,8 @@ var Accelerate = module.exports = Animation({
     acceleration: 1000,
     bounce: false,
     minBounceDistance: 5,
-    damping: 0.2
+    damping: 0.2,
+    restitution: 0.2
   },
 
   onStart: function(velocity, from, to, opts, update, done) {
@@ -26,9 +27,11 @@ var Accelerate = module.exports = Animation({
     })
     var bouncing
 
-    if(to.sub(from).norm() < .001) {
+    if(to.sub(from).norm() < .001 && velocity.norm() < .001) {
       return update.done(to, velocity)
     }
+
+    var restitution = opts.restitution || opts.damping // TODO remove damping
 
     var body = this._body = Body(velocity, from, {
       accelerate: function(s, t) {
@@ -42,7 +45,7 @@ var Accelerate = module.exports = Animation({
           update.state(position, velocity)
         } else {
           if(opts.bounce &&
-             Math.abs(height(bounceAcceleration.norm(), velocity.norm() * opts.damping, 0)) > opts.minBounceDistance) {
+             Math.abs(height(bounceAcceleration.norm(), velocity.norm() * restitution, 0)) > opts.minBounceDistance) {
               bouncing = true
               body.position = Vector(to)
               body.velocity.selfMult(-opts.damping)
@@ -461,7 +464,7 @@ function Drag(phys, opts, start) {
 Emitter(Drag.prototype)
 
 Drag.prototype.moved = function() {
-  return this._moved
+  return (this._interaction.distance() > 10)
 }
 
 Drag.prototype._setupHandle = function(el) {
@@ -481,9 +484,9 @@ Drag.prototype._setupHandle = function(el) {
 }
 
 Drag.prototype._start = function(evt) {
+  this._startTime = Date.now()
   evt.preventDefault()
   this._mousedown = true
-  this._moved = false
   this._interaction = this._phys.interact({
     boundry: this._opts.boundry,
     damping: this._opts.damping,
@@ -497,7 +500,6 @@ Drag.prototype._start = function(evt) {
 Drag.prototype._move = function(evt) {
   if(!this._mousedown) return
   evt.preventDefault()
-  this._moved = true
 
   this._interaction.update(evt)
   this.emit('move', evt)
@@ -664,7 +666,6 @@ Interact.prototype.position = function(x, y) {
 
   pos = boundry.applyDamping(pos, this._opts.damping)
 
-
   this._phys.position(pos)
 
   return this
@@ -687,6 +688,7 @@ Interact.prototype.start = function(evt) {
   this._running = true
   this._phys._startAnimation(this)
   this._startPosition = evt && evtPosition.sub(position)
+  this._initialPosition = this._phys.position()
 
   this._veloX = new Velocity()
   this._veloY = new Velocity()
@@ -697,6 +699,10 @@ Interact.prototype.start = function(evt) {
     that._resolve = res
     that._reject = rej
   })
+}
+
+Interact.prototype.distance = function() {
+  return this._initialPosition.sub(this._phys.position()).norm()
 }
 
 Interact.prototype.cancel = function() {
