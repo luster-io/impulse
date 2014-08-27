@@ -53,19 +53,16 @@ Exposes a global called impulse
 
 ##High Level Explanation
 
-  Calling impulse on an element or set of elements returns a PhysicsObject.
+  Calling `Impulse` on an element or set of elements returns an Impulse object.
 A physics object maintains it's own position and velocity.  You can interact
-with a PhysicsObject (drag, pan, etc), and animate it.  Animations take
+with a Impulse object (drag, pan, etc), and animate it.  Animations take
 the current position and velocity of the PhysicsObject as a starting point, and
 animate to a user defined position.
 
-  This makes the animations flow naturally from the user's actions.
-
-  For example a user can drag an element around.  Once they're done dragging,
+  This makes the animations flow naturally from the user's actions.  For example a user can drag an element around.  Once they're done dragging,
 the next animation will start from the position and velocity that they left off.
-Making the animation feel like a natural extension of their movement.
 
-Documentation can be found [here](labs.luster.io/physics/examples)
+Documentation can be found [here](impulse.luster.io/guides.html)
 
 #Contributing
 
