@@ -13,13 +13,13 @@ var ball = Impulse(document.querySelector('.ball'))
     translate: function(x, y) { return x + 'px, ' + y + 'px' },
   })
 //set a starting position
-phys.position(50, 50)
+ball.position(50, 50)
 
-phys.spring({ tension: 100, damping: 10 })
+ball.spring({ tension: 100, damping: 10 })
   .to(100, 100).start()
 ```
 
-More examples can be found [here](impulse.luster.io/physics/examples)
+More examples can be found [here](impulse.luster.io/examples.html)
 
 ##Installation
 
