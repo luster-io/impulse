@@ -868,8 +868,19 @@ var currentTime = Date.now() / 1000
   , t = 0
   , dt = 0.015
 
+var requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       || 
+          window.webkitRequestAnimationFrame || 
+          window.mozRequestAnimationFrame    || 
+          window.oRequestAnimationFrame      || 
+          window.msRequestAnimationFrame     || 
+          function(/* function */ callback, /* DOMElement */ element){
+              window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
 function simulate() {
-  requestAnimationFrame(function() {
+  requestAnimFrame(function() {
     simulate()
     var newTime = Date.now() / 1000
     var frameTime = newTime - currentTime
