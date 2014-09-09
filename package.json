@@ -1,6 +1,6 @@
 {
   "name": "impulse",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "lib/index.js",
   "scripts": {
     "build": "browserify lib/index.js -s Impulse > impulse.js",
