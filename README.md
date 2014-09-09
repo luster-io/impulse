@@ -19,7 +19,7 @@ ball.spring({ tension: 100, damping: 10 })
   .to(100, 100).start()
 ```
 
-More examples can be found [here](impulse.luster.io/examples.html)
+More examples can be found [here](http://impulse.luster.io/examples.html)
 
 ##Installation
 
@@ -62,7 +62,7 @@ animate to a user defined position.
   This makes the animations flow naturally from the user's actions.  For example a user can drag an element around.  Once they're done dragging,
 the next animation will start from the position and velocity that they left off.
 
-Documentation can be found [here](impulse.luster.io/guides.html)
+Documentation can be found [here](http://impulse.luster.io/guides.html)
 
 #Contributing
 
