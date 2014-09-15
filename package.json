@@ -4,7 +4,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "browserify lib/index.js -s Impulse > impulse.js",
-    "build-min": "ccjs impulse.js --compilation_level=SIMPLE_OPTIMIZATIONS > impulse.min.js"
+    "build-min": "ccjs impulse.js --compilation_level=SIMPLE_OPTIMIZATIONS --language_in=ECMASCRIPT5 > impulse.min.js"
   },
   "engines": {
     "node": ">=0.10.0"
