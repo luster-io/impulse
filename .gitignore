@@ -3,3 +3,5 @@ node_modules
 .sass-cache
 app/bower_components
 .DS_Store
+*.swp
+*.swm

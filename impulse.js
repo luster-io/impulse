@@ -1,10 +1,10 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Impulse=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var Body = _dereq_('./body')
-var simulation = _dereq_('./simulation')
-var Boundry = _dereq_('./boundry')
-var Animation = _dereq_('./animation')
-var Vector = _dereq_('./vector')
-var height = _dereq_('./util').height
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Impulse=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var Body = require('./body')
+var simulation = require('./simulation')
+var Boundary = require('./boundary')
+var Animation = require('./animation')
+var Vector = require('./vector')
+var height = require('./util').height
 
 var Accelerate = module.exports = Animation({
   defaultOptions: {
@@ -19,7 +19,7 @@ var Accelerate = module.exports = Animation({
     var direction = to.sub(from).normalize()
     var acceleration = direction.mult(opts.acceleration)
     var bounceAcceleration = direction.mult(opts.bounceAcceleration || opts.acceleration)
-    var boundry = Boundry({
+    var boundary = Boundary({
       left: (to.x > from.x) ? -Infinity : to.x,
       right: (to.x > from.x) ? to.x : Infinity,
       top: (to.y > from.y) ? -Infinity : to.y,
@@ -41,7 +41,7 @@ var Accelerate = module.exports = Animation({
           return acceleration
       },
       update: function(position, velocity) {
-        if(boundry.contains(position)) {
+        if(boundary.contains(position)) {
           update.state(position, velocity)
         } else {
           if(opts.bounce &&
@@ -63,16 +63,16 @@ var Accelerate = module.exports = Animation({
   }
 })
 
-},{"./animation":2,"./body":4,"./boundry":5,"./simulation":11,"./util":13,"./vector":14}],2:[function(_dereq_,module,exports){
-var defaults = _dereq_('lodash.defaults')
-  , Promise = window.Promise || _dereq_('promise')
-  , Boundry = _dereq_('./boundry')
-  , Vector = _dereq_('./vector')
-  , Emitter = _dereq_('component-emitter')
+},{"./animation":2,"./body":4,"./boundary":5,"./simulation":11,"./util":13,"./vector":14}],2:[function(require,module,exports){
+var defaults = require('lodash.defaults')
+  , Promise = window.Promise || require('promise')
+  , Boundary = require('./boundary')
+  , Vector = require('./vector')
+  , Emitter = require('component-emitter')
 
 var proto = {
   to: function(x, y) {
-    if(x instanceof Boundry)
+    if(x instanceof Boundary)
       this._to = x
     else
       this._to = Vector(x, y)
@@ -131,7 +131,7 @@ var proto = {
     this._phys._startAnimation(this)
 
     this._running = true
-    if(to instanceof Boundry)
+    if(to instanceof Boundary)
       to = to.nearestIntersect(from, velocity)
     this._onStart(velocity, from, to, opts, update)
 
@@ -168,11 +168,11 @@ function Animation(callbacks) {
 
 module.exports = Animation
 
-},{"./boundry":5,"./vector":14,"component-emitter":16,"lodash.defaults":17,"promise":24}],3:[function(_dereq_,module,exports){
-var defaults = _dereq_('lodash.defaults')
-  , Vector = _dereq_('./vector')
-  , simulation = _dereq_('./simulation')
-  , Body = _dereq_('./body')
+},{"./boundary":5,"./vector":14,"component-emitter":15,"lodash.defaults":16,"promise":23}],3:[function(require,module,exports){
+var defaults = require('lodash.defaults')
+  , Vector = require('./vector')
+  , simulation = require('./simulation')
+  , Body = require('./body')
 
 var defaultOptions = {
   tension: 100,
@@ -269,8 +269,8 @@ AttachSpring.prototype.start = function() {
   simulation.addBody(body)
   return this
 }
-},{"./body":4,"./simulation":11,"./vector":14,"lodash.defaults":17}],4:[function(_dereq_,module,exports){
-var Vector = _dereq_('./vector')
+},{"./body":4,"./simulation":11,"./vector":14,"lodash.defaults":16}],4:[function(require,module,exports){
+var Vector = require('./vector')
 
 module.exports = Body
 
@@ -300,9 +300,9 @@ Body.prototype.atPosition = function(pos) {
   return this.position.sub(Vector(pos)).norm() < .01
 }
 
-},{"./vector":14}],5:[function(_dereq_,module,exports){
-var Vector = _dereq_('./vector')
-module.exports = Boundry
+},{"./vector":14}],5:[function(require,module,exports){
+var Vector = require('./vector')
+module.exports = Boundary
 
 function pointBetween(p, p1, p2) {
   return p >= p1 && p <= p2
@@ -318,7 +318,7 @@ function xIntersect(x, point, direction) {
   return point.add(direction.clone().mult(factor))
 }
 
-Boundry.prototype.applyDamping = function(position, damping) {
+Boundary.prototype.applyDamping = function(position, damping) {
   var x = position.x
     , y = position.y
 
@@ -337,24 +337,24 @@ Boundry.prototype.applyDamping = function(position, damping) {
   return Vector(x, y)
 }
 
-function Boundry(boundry) {
-  if(!(this instanceof Boundry))
-    return new Boundry(boundry)
+function Boundary(boundary) {
+  if(!(this instanceof Boundary))
+    return new Boundary(boundary)
 
-  this.left = (typeof boundry.left !== 'undefined') ? boundry.left : -Infinity
-  this.right = (typeof boundry.right !== 'undefined') ? boundry.right : Infinity
-  this.top = (typeof boundry.top !== 'undefined') ? boundry.top : -Infinity
-  this.bottom = (typeof boundry.bottom !== 'undefined') ? boundry.bottom : Infinity
+  this.left = (typeof boundary.left !== 'undefined') ? boundary.left : -Infinity
+  this.right = (typeof boundary.right !== 'undefined') ? boundary.right : Infinity
+  this.top = (typeof boundary.top !== 'undefined') ? boundary.top : -Infinity
+  this.bottom = (typeof boundary.bottom !== 'undefined') ? boundary.bottom : Infinity
 }
 
-Boundry.prototype.contains = function(pt) {
+Boundary.prototype.contains = function(pt) {
   return pt.x >= this.left &&
          pt.x <= this.right &&
          pt.y >= this.top &&
          pt.y <= this.bottom
 }
 
-Boundry.prototype.nearestIntersect = function(point, velocity) {
+Boundary.prototype.nearestIntersect = function(point, velocity) {
   var direction = Vector(velocity).normalize()
     , point = Vector(point)
     , isect
@@ -378,17 +378,18 @@ Boundry.prototype.nearestIntersect = function(point, velocity) {
     return isect
 
   //if the velocity is zero, or it didn't intersect any lines (outside the box)
-  //just send it it the nearest boundry
+  //just send it it the nearest boundary
   distX = (Math.abs(point.x - this.left) < Math.abs(point.x - this.right)) ? this.left : this.right
   distY = (Math.abs(point.y - this.top) < Math.abs(point.y - this.bottom)) ? this.top : this.bottom
 
   return (distX < distY) ? Vector(distX, point.y) : Vector(point.x, distY)
 }
-},{"./vector":14}],6:[function(_dereq_,module,exports){
-var Body = _dereq_('./body')
-var simulation = _dereq_('./simulation')
-var Boundry = _dereq_('./boundry')
-var Animation = _dereq_('./animation')
+
+},{"./vector":14}],6:[function(require,module,exports){
+var Body = require('./body')
+var simulation = require('./simulation')
+var Boundary = require('./boundary')
+var Animation = require('./animation')
 
 var Decelerate = module.exports = Animation({
   defaultOptions: {
@@ -397,7 +398,7 @@ var Decelerate = module.exports = Animation({
   onStart: function(velocity, from, to, opts, update, done) {
     var direction = to.sub(from).normalize()
       , deceleration = direction.mult(opts.deceleration).negate()
-      , boundry = Boundry({
+      , boundary = Boundary({
       left: Math.min(to.x, from.x),
       right: Math.max(to.x, from.x),
       top: Math.min(to.y, from.y),
@@ -413,7 +414,7 @@ var Decelerate = module.exports = Animation({
       update: function(position, velocity) {
         if(!direction.directionEqual(velocity)) {
           update.cancel(position, { x: 0, y: 0 })
-        } else if(boundry.contains(position)) {
+        } else if(boundary.contains(position)) {
           update.state(position, velocity)
         } else {
           update.done(to, velocity)
@@ -428,9 +429,9 @@ var Decelerate = module.exports = Animation({
   }
 })
 
-},{"./animation":2,"./body":4,"./boundry":5,"./simulation":11}],7:[function(_dereq_,module,exports){
-var Emitter = _dereq_('component-emitter')
-  , defaults = _dereq_('lodash.defaults')
+},{"./animation":2,"./body":4,"./boundary":5,"./simulation":11}],7:[function(require,module,exports){
+var Emitter = require('component-emitter')
+  , defaults = require('lodash.defaults')
 
 var defaultOpts = {}
 
@@ -448,6 +449,14 @@ function Drag(phys, opts, start) {
   }
 
   this._opts = defaults({}, defaultOpts, opts)
+
+  //Warn of deprecated option
+  if(this._opts.boundry){
+    console.warn("Warning: Misspelled option 'boundry' is being deprecated. Please use 'boundary' instead.");
+    this._opts.boundary = this._opts.boundry;
+    delete this._opts.boundry;
+  }
+
   handles = this._opts.handle
 
 
@@ -488,7 +497,7 @@ Drag.prototype._start = function(evt) {
   evt.preventDefault()
   this._mousedown = true
   this._interaction = this._phys.interact({
-    boundry: this._opts.boundry,
+    boundary: this._opts.boundary,
     damping: this._opts.damping,
     direction: this._opts.direction
   })
@@ -515,19 +524,19 @@ Drag.prototype._end = function(evt) {
   this.emit('end', evt)
 }
 
-},{"component-emitter":16,"lodash.defaults":17}],8:[function(_dereq_,module,exports){
-var simulation = _dereq_('./simulation')
-var Vector = _dereq_('./vector')
-var Renderer = _dereq_('./renderer')
-var defaults = _dereq_('lodash.defaults')
-var Spring = _dereq_('./spring')
-var AttachSpring = _dereq_('./attach-spring')
-var Decelerate = _dereq_('./decelerate')
-var Accelerate = _dereq_('./accelerate')
-var Drag = _dereq_('./drag')
-var Interact = _dereq_('./interact')
-var Boundry = _dereq_('./boundry')
-var Promise = window.Promise || _dereq_('promise')
+},{"component-emitter":15,"lodash.defaults":16}],8:[function(require,module,exports){
+var simulation = require('./simulation')
+var Vector = require('./vector')
+var Renderer = require('./renderer')
+var defaults = require('lodash.defaults')
+var Spring = require('./spring')
+var AttachSpring = require('./attach-spring')
+var Decelerate = require('./decelerate')
+var Accelerate = require('./accelerate')
+var Drag = require('./drag')
+var Interact = require('./interact')
+var Boundary = require('./boundary')
+var Promise = window.Promise || require('promise')
 
 module.exports = Physics
 
@@ -552,7 +561,8 @@ function Physics(rendererOrEls) {
   this._velocity = Vector(0, 0)
 }
 
-Physics.Boundry = Boundry
+Physics.Boundary = Boundary
+Physics.Boundry = Boundary
 Physics.Vector = Vector
 Physics.Promise = Promise
 
@@ -629,18 +639,19 @@ Physics.prototype.accelerate = function(opts) {
 Physics.prototype.attachSpring = function(attachment, opts) {
   return new AttachSpring(this, attachment, opts)
 }
-},{"./accelerate":1,"./attach-spring":3,"./boundry":5,"./decelerate":6,"./drag":7,"./interact":9,"./renderer":10,"./simulation":11,"./spring":12,"./vector":14,"lodash.defaults":17,"promise":24}],9:[function(_dereq_,module,exports){
-var defaults = _dereq_('lodash.defaults')
-var Velocity = _dereq_('touch-velocity')
-var Vector = _dereq_('./vector')
-var Promise = _dereq_('promise')
-var util = _dereq_('./util')
-var Boundry = _dereq_('./boundry')
+
+},{"./accelerate":1,"./attach-spring":3,"./boundary":5,"./decelerate":6,"./drag":7,"./interact":9,"./renderer":10,"./simulation":11,"./spring":12,"./vector":14,"lodash.defaults":16,"promise":23}],9:[function(require,module,exports){
+var defaults = require('lodash.defaults')
+var Velocity = require('touch-velocity')
+var Vector = require('./vector')
+var Promise = require('promise')
+var util = require('./util')
+var Boundary = require('./boundary')
 
 module.exports = Interact
 
 var defaultOpts = {
-  boundry: Boundry({}),
+  boundary: Boundary({}),
   damping: 0,
   direction: 'both'
 }
@@ -649,11 +660,18 @@ function Interact(phys, opts) {
   this._phys = phys
   this._running = false
   this._opts = defaults({}, opts, defaultOpts)
+
+  //Warn of deprecated option
+  if(this._opts.boundry){
+    console.warn("Warning: Misspelled option 'boundry' is being deprecated. Please use 'boundary' instead.");
+    this._opts.boundary = this._opts.boundry;
+    delete this._opts.boundry;
+  }
 }
 
 Interact.prototype.position = function(x, y) {
   var direction = this._opts.direction
-    , boundry = this._opts.boundry
+    , boundary = this._opts.boundary
     , pos = Vector(x, y)
 
   if(direction !== 'both' && direction !== 'horizontal') pos.x = 0
@@ -664,7 +682,7 @@ Interact.prototype.position = function(x, y) {
 
   this._phys.velocity(this._veloX.getVelocity(), this._veloY.getVelocity())
 
-  pos = boundry.applyDamping(pos, this._opts.damping)
+  pos = boundary.applyDamping(pos, this._opts.damping)
 
   this._phys.position(pos)
 
@@ -720,11 +738,11 @@ Interact.prototype.end = function() {
   return this._ended
 }
 
-},{"./boundry":5,"./util":13,"./vector":14,"lodash.defaults":17,"promise":24,"touch-velocity":28}],10:[function(_dereq_,module,exports){
+},{"./boundary":5,"./util":13,"./vector":14,"lodash.defaults":16,"promise":23,"touch-velocity":27}],10:[function(require,module,exports){
 var prefixes = ['Webkit', 'Moz', 'Ms', 'ms']
 var calls = []
 var transformProp = prefixed('transform')
-var raf = _dereq_('raf')
+var raf = require('raf')
 
 function loop() {
   raf(function() {
@@ -821,10 +839,10 @@ Renderer.prototype.update = function(x, y) {
   this.currentPosition = { x: x, y: y }
 }
 
-},{"raf":26}],11:[function(_dereq_,module,exports){
-var Vector = _dereq_('./vector')
+},{"raf":25}],11:[function(require,module,exports){
+var Vector = require('./vector')
   , bodies = []
-  , raf = _dereq_('raf')
+  , raf = require('raf')
 
 function increment(a, b, c, d) {
   var vec = Vector(0, 0)
@@ -912,11 +930,11 @@ module.exports.removeBody = function(body) {
     bodies.splice(index, 1)
 }
 
-},{"./vector":14,"raf":26}],12:[function(_dereq_,module,exports){
-var Body = _dereq_('./body')
-var simulation = _dereq_('./simulation')
-var Boundry = _dereq_('./boundry')
-var Animation = _dereq_('./animation')
+},{"./vector":14,"raf":25}],12:[function(require,module,exports){
+var Body = require('./body')
+var simulation = require('./simulation')
+var Boundary = require('./boundary')
+var Animation = require('./animation')
 
 var Spring = module.exports = Animation({
   defaultOptions: {
@@ -945,8 +963,8 @@ var Spring = module.exports = Animation({
   }
 })
 
-},{"./animation":2,"./body":4,"./boundry":5,"./simulation":11}],13:[function(_dereq_,module,exports){
-var Vector = _dereq_('./vector')
+},{"./animation":2,"./body":4,"./boundary":5,"./simulation":11}],13:[function(require,module,exports){
+var Vector = require('./vector')
 function vertex(a, b) {
   return -b / (2 * a)
 }
@@ -968,7 +986,7 @@ function eventVector(evt) {
 
 module.exports.height = height
 module.exports.eventVector = eventVector
-},{"./vector":14}],14:[function(_dereq_,module,exports){
+},{"./vector":14}],14:[function(require,module,exports){
 module.exports = Vector
 
 function Vector(x, y) {
@@ -1117,62 +1135,7 @@ Vector.prototype.lerp = function(vector, alpha) {
   return this.mult(1-alpha).add(vector.mult(alpha))
 }
 
-},{}],15:[function(_dereq_,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],16:[function(_dereq_,module,exports){
+},{}],15:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -1338,7 +1301,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],17:[function(_dereq_,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1347,8 +1310,8 @@ Emitter.prototype.hasListeners = function(event){
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-var keys = _dereq_('lodash.keys'),
-    objectTypes = _dereq_('lodash._objecttypes');
+var keys = require('lodash.keys'),
+    objectTypes = require('lodash._objecttypes');
 
 /**
  * Assigns own enumerable properties of source object(s) to the destination
@@ -1394,7 +1357,7 @@ var defaults = function(object, source, guard) {
 
 module.exports = defaults;
 
-},{"lodash._objecttypes":18,"lodash.keys":19}],18:[function(_dereq_,module,exports){
+},{"lodash._objecttypes":17,"lodash.keys":18}],17:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1416,7 +1379,7 @@ var objectTypes = {
 
 module.exports = objectTypes;
 
-},{}],19:[function(_dereq_,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1425,9 +1388,9 @@ module.exports = objectTypes;
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-var isNative = _dereq_('lodash._isnative'),
-    isObject = _dereq_('lodash.isobject'),
-    shimKeys = _dereq_('lodash._shimkeys');
+var isNative = require('lodash._isnative'),
+    isObject = require('lodash.isobject'),
+    shimKeys = require('lodash._shimkeys');
 
 /* Native method shortcuts for methods with the same name as other `lodash` methods */
 var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
@@ -1454,7 +1417,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"lodash._isnative":20,"lodash._shimkeys":21,"lodash.isobject":22}],20:[function(_dereq_,module,exports){
+},{"lodash._isnative":19,"lodash._shimkeys":20,"lodash.isobject":21}],19:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1490,7 +1453,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{}],21:[function(_dereq_,module,exports){
+},{}],20:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1499,7 +1462,7 @@ module.exports = isNative;
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-var objectTypes = _dereq_('lodash._objecttypes');
+var objectTypes = require('lodash._objecttypes');
 
 /** Used for native method references */
 var objectProto = Object.prototype;
@@ -1530,7 +1493,7 @@ var shimKeys = function(object) {
 
 module.exports = shimKeys;
 
-},{"lodash._objecttypes":18}],22:[function(_dereq_,module,exports){
+},{"lodash._objecttypes":17}],21:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1539,7 +1502,7 @@ module.exports = shimKeys;
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-var objectTypes = _dereq_('lodash._objecttypes');
+var objectTypes = require('lodash._objecttypes');
 
 /**
  * Checks if `value` is the language type of Object.
@@ -1571,10 +1534,10 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{"lodash._objecttypes":18}],23:[function(_dereq_,module,exports){
+},{"lodash._objecttypes":17}],22:[function(require,module,exports){
 'use strict';
 
-var asap = _dereq_('asap')
+var asap = require('asap')
 
 module.exports = Promise
 function Promise(fn) {
@@ -1678,13 +1641,13 @@ function doResolve(fn, onFulfilled, onRejected) {
   }
 }
 
-},{"asap":25}],24:[function(_dereq_,module,exports){
+},{"asap":24}],23:[function(require,module,exports){
 'use strict';
 
 //This file contains then/promise specific extensions to the core promise API
 
-var Promise = _dereq_('./core.js')
-var asap = _dereq_('asap')
+var Promise = require('./core.js')
+var asap = require('asap')
 
 module.exports = Promise
 
@@ -1860,7 +1823,7 @@ Promise.prototype['catch'] = function (onRejected) {
   return this.then(null, onRejected);
 }
 
-},{"./core.js":23,"asap":25}],25:[function(_dereq_,module,exports){
+},{"./core.js":22,"asap":24}],24:[function(require,module,exports){
 (function (process){
 
 // Use the fastest possible means to execute a task in a future turn
@@ -1976,14 +1939,15 @@ function asap(task) {
 module.exports = asap;
 
 
-}).call(this,_dereq_("/Users/zach/Development/impulse/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/Users/zach/Development/impulse/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":15}],26:[function(_dereq_,module,exports){
-var now = _dereq_('performance-now')
+}).call(this,require('_process'))
+},{"_process":28}],25:[function(require,module,exports){
+var now = require('performance-now')
   , global = typeof window === 'undefined' ? {} : window
   , vendors = ['moz', 'webkit']
   , suffix = 'AnimationFrame'
   , raf = global['request' + suffix]
   , caf = global['cancel' + suffix] || global['cancelRequest' + suffix]
+  , native = true
 
 for(var i = 0; i < vendors.length && !raf; i++) {
   raf = global[vendors[i] + 'Request' + suffix]
@@ -1993,6 +1957,8 @@ for(var i = 0; i < vendors.length && !raf; i++) {
 
 // Some versions of FF have rAF but not cAF
 if(!raf || !caf) {
+  native = false
+
   var last = 0
     , id = 0
     , queue = []
@@ -2009,12 +1975,16 @@ if(!raf || !caf) {
         // callbacks from appending listeners
         // to the current frame's queue
         queue.length = 0
-        for (var i = 0; i < cp.length; i++) {
-          if (!cp[i].cancelled) {
-            cp[i].callback(last)
+        for(var i = 0; i < cp.length; i++) {
+          if(!cp[i].cancelled) {
+            try{
+              cp[i].callback(last)
+            } catch(e) {
+              setTimeout(function() { throw e }, 0)
+            }
           }
         }
-      }, next)
+      }, Math.round(next))
     }
     queue.push({
       handle: ++id,
@@ -2033,17 +2003,26 @@ if(!raf || !caf) {
   }
 }
 
-module.exports = function() {
+module.exports = function(fn) {
   // Wrap in a new function to prevent
   // `cancel` potentially being assigned
   // to the native rAF function
-  return raf.apply(global, arguments)
+  if(!native) {
+    return raf.call(global, fn)
+  }
+  return raf.call(global, function() {
+    try{
+      fn.apply(this, arguments)
+    } catch(e) {
+      setTimeout(function() { throw e }, 0)
+    }
+  })
 }
 module.exports.cancel = function() {
   caf.apply(global, arguments)
 }
 
-},{"performance-now":27}],27:[function(_dereq_,module,exports){
+},{"performance-now":26}],26:[function(require,module,exports){
 (function (process){
 // Generated by CoffeeScript 1.6.3
 (function() {
@@ -2082,8 +2061,8 @@ module.exports.cancel = function() {
 //@ sourceMappingURL=performance-now.map
 */
 
-}).call(this,_dereq_("/Users/zach/Development/impulse/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/Users/zach/Development/impulse/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":15}],28:[function(_dereq_,module,exports){
+}).call(this,require('_process'))
+},{"_process":28}],27:[function(require,module,exports){
 module.exports = Velocity
 
 function Velocity() {
@@ -2121,6 +2100,70 @@ Velocity.prototype.getVelocity = function() {
   return distance / time
 }
 
-},{}]},{},[8])
-(8)
+},{}],28:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    if (canPost) {
+        var queue = [];
+        window.addEventListener('message', function (ev) {
+            var source = ev.source;
+            if ((source === window || source === null) && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+}
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}]},{},[8])(8)
 });
