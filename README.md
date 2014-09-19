@@ -73,4 +73,4 @@ issue.
 possible, please create an issue.  Maybe we can find a way to build it!
 
 ##LICENSE
- MIT -- Read LICENCE
+ MIT -- Read LICENSE
