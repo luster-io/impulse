@@ -784,7 +784,7 @@ Renderer.prototype.render = function() {
   if(!this.currentPosition) return
 
   if(!transformProp)
-    transformProp = prefixed('transform');
+    transformProp = prefixed('transform')
   var transformsToApply
     , els = this.els
     , position = this.currentPosition
@@ -1784,13 +1784,13 @@ Promise.all = function () {
 }
 
 Promise.reject = function (value) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) { 
     reject(value);
   });
 }
 
 Promise.race = function (values) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) { 
     values.forEach(function(value){
       Promise.resolve(value).then(resolve, reject);
     })
