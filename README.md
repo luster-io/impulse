@@ -19,6 +19,7 @@ ball.spring({ tension: 100, damping: 10 })
   .to(100, 100).start()
 ```
 
+
 More examples can be found [here](http://impulse.luster.io/examples.html)
 
 ##Installation
@@ -71,6 +72,12 @@ issue.
 
   If there's an interaction you'd like to see, but you don't know if it's
 possible, please create an issue.  Maybe we can find a way to build it!
+
+#Discussion
+
+There's also a place to ask questions, or get help here:
+
+[https://gitter.im/luster-io/impulse](https://gitter.im/luster-io/impulse)
 
 ##LICENSE
  MIT -- Read LICENSE
