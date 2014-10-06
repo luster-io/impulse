@@ -1,4 +1,5 @@
 #Impulse
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/luster-io/impulse?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
   Create animations that flow naturally from the user's movements.
 
