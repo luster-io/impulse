@@ -17,15 +17,19 @@ var Accelerate = module.exports = Animation({
 
   onStart: function(velocity, from, to, opts, update, done) {
     var direction = to.sub(from).normalize()
-    var acceleration = direction.mult(opts.acceleration)
-    var bounceAcceleration = direction.mult(opts.bounceAcceleration || opts.acceleration)
-    var boundary = Boundary({
-      left: (to.x > from.x) ? -Infinity : to.x,
-      right: (to.x > from.x) ? to.x : Infinity,
-      top: (to.y > from.y) ? -Infinity : to.y,
-      bottom: (to.y > from.y) ? to.y : Infinity
-    })
-    var bouncing
+    if(typeof opts.acceleration === 'number') {
+      var acceleration = direction.mult(opts.acceleration)
+    } else {
+      var acceleration = Vector(opts.acceleration)
+    }
+    var bounceAcceleration = direction.mult(opts.bounceAcceleration || acceleration)
+      , bouncing = false
+      , boundary = Boundary({
+          left: (to.x > from.x) ? -Infinity : to.x,
+          right: (to.x > from.x) ? to.x : Infinity,
+          top: (to.y > from.y) ? -Infinity : to.y,
+          bottom: (to.y > from.y) ? to.y : Infinity
+        })
 
     if(to.sub(from).norm() < .001 && velocity.norm() < .001) {
       return update.done(to, velocity)
@@ -168,7 +172,7 @@ function Animation(callbacks) {
 
 module.exports = Animation
 
-},{"./boundary":5,"./vector":14,"component-emitter":15,"lodash.defaults":16,"promise":23}],3:[function(require,module,exports){
+},{"./boundary":5,"./vector":14,"component-emitter":16,"lodash.defaults":17,"promise":24}],3:[function(require,module,exports){
 var defaults = require('lodash.defaults')
   , Vector = require('./vector')
   , simulation = require('./simulation')
@@ -269,7 +273,7 @@ AttachSpring.prototype.start = function() {
   simulation.addBody(body)
   return this
 }
-},{"./body":4,"./simulation":11,"./vector":14,"lodash.defaults":16}],4:[function(require,module,exports){
+},{"./body":4,"./simulation":11,"./vector":14,"lodash.defaults":17}],4:[function(require,module,exports){
 var Vector = require('./vector')
 
 module.exports = Body
@@ -524,7 +528,7 @@ Drag.prototype._end = function(evt) {
   this.emit('end', evt)
 }
 
-},{"component-emitter":15,"lodash.defaults":16}],8:[function(require,module,exports){
+},{"component-emitter":16,"lodash.defaults":17}],8:[function(require,module,exports){
 var simulation = require('./simulation')
 var Vector = require('./vector')
 var Renderer = require('./renderer')
@@ -591,6 +595,12 @@ Physics.prototype.direction = function(d) {
   return d === h || d === v || d === c
 }
 
+Physics.prototype.forceRender = function() {
+  if(this._renderer) {
+    this._renderer.changed = true
+  }
+}
+
 Physics.prototype.atRest = function() {
   var velocity = this.velocity()
   return velocity.x === 0 && velocity.y === 0
@@ -640,7 +650,7 @@ Physics.prototype.attachSpring = function(attachment, opts) {
   return new AttachSpring(this, attachment, opts)
 }
 
-},{"./accelerate":1,"./attach-spring":3,"./boundary":5,"./decelerate":6,"./drag":7,"./interact":9,"./renderer":10,"./simulation":11,"./spring":12,"./vector":14,"lodash.defaults":16,"promise":23}],9:[function(require,module,exports){
+},{"./accelerate":1,"./attach-spring":3,"./boundary":5,"./decelerate":6,"./drag":7,"./interact":9,"./renderer":10,"./simulation":11,"./spring":12,"./vector":14,"lodash.defaults":17,"promise":24}],9:[function(require,module,exports){
 var defaults = require('lodash.defaults')
 var Velocity = require('touch-velocity')
 var Vector = require('./vector')
@@ -738,11 +748,12 @@ Interact.prototype.end = function() {
   return this._ended
 }
 
-},{"./boundary":5,"./util":13,"./vector":14,"lodash.defaults":16,"promise":23,"touch-velocity":27}],10:[function(require,module,exports){
+},{"./boundary":5,"./util":13,"./vector":14,"lodash.defaults":17,"promise":24,"touch-velocity":28}],10:[function(require,module,exports){
 var prefixes = ['Webkit', 'Moz', 'Ms', 'ms']
 var calls = []
 var transformProp
 var raf = require('raf')
+var floatEqual = require('./util').floatEqual
 
 function loop() {
   raf(function() {
@@ -765,7 +776,7 @@ function prefixed(prop) {
 }
 
 var transformsProperties = ['translate', 'translateX', 'translateY', 'translateZ',
-                  'rotate', 'rotateX', 'rotateY', 'rotateZ',
+                  'rotate', 'rotateX', 'rotateY', 'rotate3d', 'rotateZ',
                   'scale', 'scaleX', 'scaleY', 'scaleZ',
                   'skew', 'skewX', 'skewY', 'skewZ']
 
@@ -777,11 +788,12 @@ function Renderer(els) {
   this.els = els
   this.styles = {}
   this.invisibleEls = []
+  this.changed = false
   calls.push(this.render.bind(this))
 }
 
 Renderer.prototype.render = function() {
-  if(!this.currentPosition) return
+  if(!this.changed) return
 
   if(!transformProp)
     transformProp = prefixed('transform')
@@ -795,6 +807,8 @@ Renderer.prototype.render = function() {
     , propsLength = props.length
     , i, j
     , transforms
+
+  this.changed = false
 
   for(i = 0 ; i < elsLength ; i++) {
     transformsToApply = []
@@ -838,11 +852,18 @@ Renderer.prototype.visible = function(isVisible) {
   this.visibleFn = isVisible
   return this
 }
+
 Renderer.prototype.update = function(x, y) {
+  if(this.currentPosition) {
+    var equal = floatEqual(x, this.currentPosition.x) && floatEqual(y, this.currentPosition.y)
+    this.changed = this.changed || !equal
+  } else {
+    this.changed = true
+  }
   this.currentPosition = { x: x, y: y }
 }
 
-},{"raf":25}],11:[function(require,module,exports){
+},{"./util":13,"raf":26}],11:[function(require,module,exports){
 var Vector = require('./vector')
   , bodies = []
   , raf = require('raf')
@@ -933,7 +954,7 @@ module.exports.removeBody = function(body) {
     bodies.splice(index, 1)
 }
 
-},{"./vector":14,"raf":25}],12:[function(require,module,exports){
+},{"./vector":14,"raf":26}],12:[function(require,module,exports){
 var Body = require('./body')
 var simulation = require('./simulation')
 var Boundary = require('./boundary')
@@ -968,6 +989,7 @@ var Spring = module.exports = Animation({
 
 },{"./animation":2,"./body":4,"./boundary":5,"./simulation":11}],13:[function(require,module,exports){
 var Vector = require('./vector')
+
 function vertex(a, b) {
   return -b / (2 * a)
 }
@@ -987,8 +1009,14 @@ function eventVector(evt) {
   })
 }
 
+function floatEqual(a, b) {
+  return Math.abs(a - b) < Number.EPSILON
+}
+
 module.exports.height = height
 module.exports.eventVector = eventVector
+module.exports.floatEqual = floatEqual
+
 },{"./vector":14}],14:[function(require,module,exports){
 module.exports = Vector
 
@@ -1139,6 +1167,94 @@ Vector.prototype.lerp = function(vector, alpha) {
 }
 
 },{}],15:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canMutationObserver = typeof window !== 'undefined'
+    && window.MutationObserver;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    var queue = [];
+
+    if (canMutationObserver) {
+        var hiddenDiv = document.createElement("div");
+        var observer = new MutationObserver(function () {
+            var queueList = queue.slice();
+            queue.length = 0;
+            queueList.forEach(function (fn) {
+                fn();
+            });
+        });
+
+        observer.observe(hiddenDiv, { attributes: true });
+
+        return function nextTick(fn) {
+            if (!queue.length) {
+                hiddenDiv.setAttribute('yes', 'no');
+            }
+            queue.push(fn);
+        };
+    }
+
+    if (canPost) {
+        window.addEventListener('message', function (ev) {
+            var source = ev.source;
+            if ((source === window || source === null) && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}],16:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -1304,7 +1420,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1360,7 +1476,7 @@ var defaults = function(object, source, guard) {
 
 module.exports = defaults;
 
-},{"lodash._objecttypes":17,"lodash.keys":18}],17:[function(require,module,exports){
+},{"lodash._objecttypes":18,"lodash.keys":19}],18:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1382,7 +1498,7 @@ var objectTypes = {
 
 module.exports = objectTypes;
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1420,7 +1536,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"lodash._isnative":19,"lodash._shimkeys":20,"lodash.isobject":21}],19:[function(require,module,exports){
+},{"lodash._isnative":20,"lodash._shimkeys":21,"lodash.isobject":22}],20:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1456,7 +1572,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1496,7 +1612,7 @@ var shimKeys = function(object) {
 
 module.exports = shimKeys;
 
-},{"lodash._objecttypes":17}],21:[function(require,module,exports){
+},{"lodash._objecttypes":18}],22:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1537,7 +1653,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{"lodash._objecttypes":17}],22:[function(require,module,exports){
+},{"lodash._objecttypes":18}],23:[function(require,module,exports){
 'use strict';
 
 var asap = require('asap')
@@ -1644,7 +1760,7 @@ function doResolve(fn, onFulfilled, onRejected) {
   }
 }
 
-},{"asap":24}],23:[function(require,module,exports){
+},{"asap":25}],24:[function(require,module,exports){
 'use strict';
 
 //This file contains then/promise specific extensions to the core promise API
@@ -1826,7 +1942,7 @@ Promise.prototype['catch'] = function (onRejected) {
   return this.then(null, onRejected);
 }
 
-},{"./core.js":22,"asap":24}],24:[function(require,module,exports){
+},{"./core.js":23,"asap":25}],25:[function(require,module,exports){
 (function (process){
 
 // Use the fastest possible means to execute a task in a future turn
@@ -1943,7 +2059,7 @@ module.exports = asap;
 
 
 }).call(this,require('_process'))
-},{"_process":28}],25:[function(require,module,exports){
+},{"_process":15}],26:[function(require,module,exports){
 var now = require('performance-now')
   , global = typeof window === 'undefined' ? {} : window
   , vendors = ['moz', 'webkit']
@@ -2025,7 +2141,7 @@ module.exports.cancel = function() {
   caf.apply(global, arguments)
 }
 
-},{"performance-now":26}],26:[function(require,module,exports){
+},{"performance-now":27}],27:[function(require,module,exports){
 (function (process){
 // Generated by CoffeeScript 1.6.3
 (function() {
@@ -2065,7 +2181,7 @@ module.exports.cancel = function() {
 */
 
 }).call(this,require('_process'))
-},{"_process":28}],27:[function(require,module,exports){
+},{"_process":15}],28:[function(require,module,exports){
 module.exports = Velocity
 
 function Velocity() {
@@ -2102,71 +2218,6 @@ Velocity.prototype.getVelocity = function() {
 
   return distance / time
 }
-
-},{}],28:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
 
 },{}]},{},[8])(8)
 });
