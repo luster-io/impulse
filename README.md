@@ -1,4 +1,5 @@
 #Impulse
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/luster-io/impulse?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
   Create animations that flow naturally from the user's movements.
 
@@ -18,6 +19,7 @@ ball.position(50, 50)
 ball.spring({ tension: 100, damping: 10 })
   .to(100, 100).start()
 ```
+
 
 More examples can be found [here](http://impulse.luster.io/examples.html)
 
@@ -71,6 +73,12 @@ issue.
 
   If there's an interaction you'd like to see, but you don't know if it's
 possible, please create an issue.  Maybe we can find a way to build it!
+
+#Discussion
+
+There's also a place to ask questions, or get help here:
+
+[https://gitter.im/luster-io/impulse](https://gitter.im/luster-io/impulse)
 
 ##LICENSE
  MIT -- Read LICENSE
