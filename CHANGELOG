@@ -1,4 +1,4 @@
 ### Impulse 0.1.0 (December 8th 2014)
+* [FEATURE] Add force render method, incase your style functions contain side effects.
 * [FEATURE] Acceleration can now be an object.
 * [BUGFIX] Animations aren't applied infinitely once an animation ends.
-* [FEATURE]
